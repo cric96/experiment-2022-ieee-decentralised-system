@@ -8,7 +8,11 @@ plugins {
     alias(libs.plugins.kotlin.qa)
     alias(libs.plugins.multiJvmTesting)
     alias(libs.plugins.taskTree)
+    scala
 }
+
+val scalaMajorVersion = "3"
+val scalaVersion = "3.1.1"
 
 repositories {
     mavenCentral()
@@ -37,11 +41,15 @@ multiJvm {
 }
 
 dependencies {
+    // Alchemist deps
     implementation(kotlin("stdlib-jdk8"))
     implementation(libs.bundles.alchemist.protelis)
+    implementation(libs.bundles.alchemist.scafi)
     if (!GraphicsEnvironment.isHeadless()) {
         implementation("it.unibo.alchemist:alchemist-swingui:${libs.versions.alchemist.get()}")
     }
+    // Scala Deps
+    implementation("org.scala-lang:scala3-library_3:$scalaVersion")
 }
 
 // Heap size estimation for batches

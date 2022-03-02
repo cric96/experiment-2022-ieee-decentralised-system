@@ -9,6 +9,7 @@ alchemist-scafi = { module = "it.unibo.alchemist:alchemist-incarnation-scafi", v
 
 [bundles]
 alchemist-protelis = [ "alchemist", "alchemist-protelis" ]
+alchemist-scafi = [ "alchemist", "alchemist-scafi" ]
 
 [plugins]
 gitSemVer = { id = "org.danilopianini.git-sensitive-semantic-versioning", version = "0.3.0" }
