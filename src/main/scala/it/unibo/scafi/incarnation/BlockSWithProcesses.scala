@@ -4,9 +4,9 @@ import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import Ordered._ // help implicit conversion
 
 trait BlockSWithProcesses {
-  self: AggregateProgram with ProcessFix with BlockG =>
+  self: AggregateProgram with ProcessFix with BlockG with ScafiAlchemistSupport =>
   import SpawnInterface._ // for statuses
-  type SymmetryBreaker = Double // but could be a lambda
+  type SymmetryBreaker = Double // but could be a lambda???
   type Distance =
     Boolean => Double // or in general, it could be type Distance[D: Numeric] = Boolean => D, or another type context
 
@@ -19,6 +19,7 @@ trait BlockSWithProcesses {
       metric: Metric, // probably useless
       distance: Distance
   )
+
   def localLeaderElection(
       id: ID,
       symmetryBreaker: SymmetryBreaker,
@@ -27,14 +28,37 @@ trait BlockSWithProcesses {
       distance: Distance
   ): ID = {
     val default = id -> LeaderProcessData(symmetryBreaker, 0.0)
-    share(default) { case ((lead, leadData), nbrField) =>
+    rep(default) { case (leadId, leadData) =>
+      val leaders = sspawn2[ID, LeaderProcessInput, LeaderProcessData](
+        processDefinition,
+        Set(leadId),
+        LeaderProcessInput(leadId, id, leadData.symmetryBreaker, radius, metric, distance)
+      )
+      node.put("howManyProcess", leaders.size)
+      val closeEnough = leaders.filter { case (_, LeaderProcessData(_, distance)) => distance < radius }
+      val best = selectLeader(closeEnough).getOrElse(default)
+      best
+    }._1
+  }
+
+  def localLeaderElection2(
+      id: ID,
+      symmetryBreaker: SymmetryBreaker,
+      radius: Double,
+      metric: Metric,
+      distance: Distance
+  ): ID = {
+    val default = id -> LeaderProcessData(symmetryBreaker, 0.0)
+    share(default) { case ((leadId, leadData), nbrField) =>
       val sources = includingSelf.unionHood(nbrField())
+      node.put("sources", sources.map(_._1))
       val processId: Set[ID] = sources.map { case (id, _) => id }
       val leaders = sspawn2[ID, LeaderProcessInput, LeaderProcessData](
         processDefinition,
         processId,
-        LeaderProcessInput(lead, id, leadData.symmetryBreaker, radius, metric, distance)
+        LeaderProcessInput(leadId, id, leadData.symmetryBreaker, radius, metric, distance)
       )
+      node.put("howManyProcess", leaders.size)
       val closeEnough = leaders.filter { case (_, LeaderProcessData(_, distance)) => distance < radius }
       val best = selectLeader(closeEnough).getOrElse(default)
       best
@@ -53,14 +77,12 @@ trait BlockSWithProcesses {
 
   private val insideBubble: ID => LeaderProcessInput => Status =
     processId => { case LeaderProcessInput(localLeader, uid, _, radius, _, distance) =>
-      val inBubble = distance(processId == uid) <= radius // probably it does not work
-      mux(processId == uid && uid != localLeader) {
+      branch(processId == uid && uid != localLeader) {
         Terminated // I started the process, but I am not the leader anymore, so I suppress that process
-      }(mux(inBubble) {
-        Output
       } {
-        External
-      })
+        val inBubble = distance(processId == uid) <= radius // probably it does not work
+        mux(inBubble)(Output)(External)
+      }
     }
 
   private val expandBubble: ID => LeaderProcessInput => LeaderProcessData =
