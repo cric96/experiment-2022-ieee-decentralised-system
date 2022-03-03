@@ -6,13 +6,13 @@ plugins {
     alias(libs.plugins.gitSemVer)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.qa)
-    alias(libs.plugins.multiJvmTesting)
+    // alias(libs.plugins.multiJvmTesting)
     alias(libs.plugins.taskTree)
     scala
 }
 
-val scalaMajorVersion = "3"
-val scalaVersion = "3.1.1"
+val scalaMajorVersion = "2"
+val scalaVersion = "2.13.6"
 
 repositories {
     mavenCentral()
@@ -36,9 +36,9 @@ val usesJvm: Int = File(File(projectDir, "util"), "Dockerfile")
     }
     .toInt()
 
-multiJvm {
-    jvmVersionForCompilation.set(usesJvm)
-}
+// multiJvm {
+//    jvmVersionForCompilation.set(usesJvm)
+// }
 
 dependencies {
     // Alchemist deps
@@ -49,7 +49,7 @@ dependencies {
         implementation("it.unibo.alchemist:alchemist-swingui:${libs.versions.alchemist.get()}")
     }
     // Scala Deps
-    implementation("org.scala-lang:scala3-library_3:$scalaVersion")
+    implementation("org.scala-lang:scala-library:$scalaVersion")
 }
 
 // Heap size estimation for batches
@@ -101,11 +101,11 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             } else {
                 args("-g", "effects/${it.nameWithoutExtension}.aes")
             }
-            javaLauncher.set(
-                javaToolchains.launcherFor {
-                    languageVersion.set(JavaLanguageVersion.of(usesJvm))
-                }
-            )
+            // javaLauncher.set(
+            //    javaToolchains.launcherFor {
+            //        languageVersion.set(JavaLanguageVersion.of(usesJvm))
+            //    }
+            // )
             this.additionalConfiguration()
         }
         val capitalizedName = it.nameWithoutExtension.capitalize()
