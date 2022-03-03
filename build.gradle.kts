@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.gitSemVer)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.qa)
-    // alias(libs.plugins.multiJvmTesting)
+    alias(libs.plugins.multiJvmTesting)
     alias(libs.plugins.taskTree)
     scala
 }
@@ -36,9 +36,9 @@ val usesJvm: Int = File(File(projectDir, "util"), "Dockerfile")
     }
     .toInt()
 
-// multiJvm {
-//    jvmVersionForCompilation.set(usesJvm)
-// }
+multiJvm {
+    jvmVersionForCompilation.set(usesJvm)
+}
 
 dependencies {
     // Alchemist deps
@@ -101,11 +101,11 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             } else {
                 args("-g", "effects/${it.nameWithoutExtension}.json")
             }
-            // javaLauncher.set(
-            //    javaToolchains.launcherFor {
-            //        languageVersion.set(JavaLanguageVersion.of(usesJvm))
-            //    }
-            // )
+            javaLauncher.set(
+                javaToolchains.launcherFor {
+                    languageVersion.set(JavaLanguageVersion.of(usesJvm))
+                }
+            )
             this.additionalConfiguration()
         }
         val capitalizedName = it.nameWithoutExtension.capitalize()
