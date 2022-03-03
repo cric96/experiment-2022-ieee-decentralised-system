@@ -42,22 +42,25 @@ trait BlockSWithProcesses {
   }
 
   private val processDefinition: ID => LeaderProcessInput => POut[LeaderProcessData] = id =>
-    breaker =>
-      insideBubble(id)(breaker) match {
-        case status @ (TerminatedStatus | ExternalStatus) => POut(LeaderProcessData(0, Double.PositiveInfinity), status)
-        case Output => POut(expandBubble(id)(breaker), Output)
+    breaker => {
+      val status = insideBubble(id)(breaker)
+      mux(status == Terminated || status == External) {
+        POut(LeaderProcessData(0, Double.PositiveInfinity), status)
+      } {
+        POut(expandBubble(id)(breaker), Output)
       }
+    }
 
   private val insideBubble: ID => LeaderProcessInput => Status =
     processId => { case LeaderProcessInput(localLeader, uid, _, radius, _, distance) =>
       val inBubble = distance(processId == uid) <= radius // probably it does not work
-      if (processId == uid && uid != localLeader) {
+      mux(processId == uid && uid != localLeader) {
         Terminated // I started the process, but I am not the leader anymore, so I suppress that process
-      } else if (inBubble) {
+      }(mux(inBubble) {
         Output
-      } else {
+      } {
         External
-      }
+      })
     }
 
   private val expandBubble: ID => LeaderProcessInput => LeaderProcessData =
@@ -83,4 +86,5 @@ trait BlockSWithProcesses {
       mux(source)(local)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbr(nbrField())))
     }
   }
+
 }
