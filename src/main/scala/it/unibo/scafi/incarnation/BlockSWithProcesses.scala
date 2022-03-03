@@ -44,7 +44,7 @@ trait BlockSWithProcesses {
   private val processDefinition: ID => LeaderProcessInput => POut[LeaderProcessData] = id =>
     breaker =>
       insideBubble(id)(breaker) match {
-        case status @ TerminatedStatus | ExternalStatus => POut(LeaderProcessData(0, Double.PositiveInfinity), status)
+        case status @ (TerminatedStatus | ExternalStatus) => POut(LeaderProcessData(0, Double.PositiveInfinity), status)
         case Output => POut(expandBubble(id)(breaker), Output)
       }
 
@@ -61,14 +61,14 @@ trait BlockSWithProcesses {
     }
 
   private val expandBubble: ID => LeaderProcessInput => LeaderProcessData =
-    processId => { case LeaderProcessInput(localLeader, localId, symmetryBreaker, radius, metric, distance) =>
+    processId => { case LeaderProcessInput(localLeader, localId, symmetryBreaker, _, _, distance) =>
       val source = processId == localId && localLeader == localId
       val gradient = distance(source)
       LeaderProcessData(broadcastAlong(source, gradient, symmetryBreaker), gradient)
     }
 
-  private def selectLeader(leaders: Map[ID, LeaderProcessData]): Option[(ID, LeaderProcessData)] =
-    leaders.reduceOption {
+  private def selectLeader(leaders: Map[ID, LeaderProcessData]): Option[(ID, LeaderProcessData)] = {
+    leaders.reduceOption[(ID, LeaderProcessData)] {
       case (leaderA @ (idA, LeaderProcessData(breakerA, _)), leaderB @ (idB, LeaderProcessData(breakerB, _))) =>
         if ((breakerA, idA) > (breakerB, idB)) {
           leaderA
@@ -76,10 +76,11 @@ trait BlockSWithProcesses {
           leaderB
         }
     }
+  }
 
   def broadcastAlong[D: Builtins.Bounded](source: Boolean, g: Double, data: D): D = {
     share(data) { case (local, nbrField) =>
-      mux(source)(local)(includingSelf.minHoodSelector(nbr(g))(nbr(nbrField())))
+      mux(source)(local)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbr(nbrField())))
     }
   }
 }
