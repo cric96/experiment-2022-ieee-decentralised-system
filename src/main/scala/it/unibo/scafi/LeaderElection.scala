@@ -11,6 +11,7 @@ class LeaderElection
     with BlockSWithProcesses {
   override def main(): Any = {
     val neighbours = excludingSelf.sumHood(nbr(1))
-    localLeaderElection(mid(), neighbours, 1, nbrRange, source => distanceTo(source, nbrRange))
+    localLeaderElection(symmetryBreaker = neighbours, radius = 3)
+    // localLeaderElection(mid(), neighbours, 1, nbrRange, source => distanceTo(source, nbrRange))
   }
 }
