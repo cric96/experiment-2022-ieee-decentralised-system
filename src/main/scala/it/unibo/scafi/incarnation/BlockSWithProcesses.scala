@@ -13,17 +13,25 @@ TODO:
 trait BlockSWithProcesses {
   self: AggregateProgram with ProcessFix with BlockG with ScafiAlchemistSupport with StandardSensors =>
   import SpawnInterface._ // for statuses
+  // Types
   type SymmetryBreaker = Double // but could be a lambda???
   type Distance =
     Boolean => Double // or in general, it could be type Distance[D: Numeric] = Boolean => D, or another type context
+  // Data
 
+  /** Represent data produced by a single aggregate process
+    * @param symmetryBreaker
+    *   the symmetry breaker shared by the leader
+    * @param distanceFromLeader
+    *   the distance (using a certain metric)
+    */
   case class LeaderProcessOutput(symmetryBreaker: SymmetryBreaker, distanceFromLeader: Double)
+
   case class LeaderProcessInput(
       localLeader: ID,
       localId: ID,
-      data: LeaderProcessOutput,
+      breaker: SymmetryBreaker,
       radius: Double,
-      metric: Metric, // probably useless
       distance: Distance
   )
 
@@ -31,15 +39,14 @@ trait BlockSWithProcesses {
       id: ID = mid(),
       symmetryBreaker: SymmetryBreaker,
       radius: Double,
-      metric: Metric = nbrRange,
       distance: Distance = distanceTo(_, nbrRange)
   ): ID = {
     val default = id -> LeaderProcessOutput(symmetryBreaker, 0.0)
-    rep(default) { case (leadId, leadData) =>
+    rep(default) { case (leadId, _) =>
       val leaders = sspawn2[ID, LeaderProcessInput, LeaderProcessOutput](
         processDefinition,
-        Set(leadId),
-        LeaderProcessInput(leadId, id, leadData, radius, metric, distance)
+        mux(id == leadId)(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
+        LeaderProcessInput(leadId, id, symmetryBreaker, radius, distance)
       )
       val closeEnough = leaders.filter { case (_, LeaderProcessOutput(_, distance)) => distance < radius }
       val best = selectLeader(closeEnough).getOrElse(default)
@@ -58,7 +65,7 @@ trait BlockSWithProcesses {
     }
 
   private val insideBubble: ID => LeaderProcessInput => (Status, Double) =
-    processId => { case LeaderProcessInput(localLeader, uid, _, radius, _, distance) =>
+    processId => { case LeaderProcessInput(localLeader, uid, _, radius, distance) =>
       branch(processId == uid && uid != localLeader) {
         // started the process, but I am not the leader anymore, so I suppress that process
         (Terminated, Double.PositiveInfinity)
@@ -71,9 +78,9 @@ trait BlockSWithProcesses {
 
   private val expandBubble: Double => ID => LeaderProcessInput => LeaderProcessOutput =
     gradient =>
-      processId => { case LeaderProcessInput(localLeader, uid, leadData, _, _, _) =>
+      processId => { case LeaderProcessInput(_, uid, breaker, _, _) =>
         val source = processId == uid
-        LeaderProcessOutput(broadcastAlong(source, gradient, leadData.symmetryBreaker), gradient)
+        LeaderProcessOutput(broadcastAlong(source, gradient, breaker), gradient)
       }
 
   private def selectLeader(leaders: Map[ID, LeaderProcessOutput]): Option[(ID, LeaderProcessOutput)] = {

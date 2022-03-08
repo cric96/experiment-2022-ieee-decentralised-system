@@ -9,9 +9,10 @@ class LeaderElection
     with ProcessFix
     with BlockG
     with BlockSWithProcesses {
+  lazy val grain = 3
   override def main(): Any = {
     val neighbours = excludingSelf.sumHood(nbr(1))
-    localLeaderElection(symmetryBreaker = neighbours, radius = 3)
+    localLeaderElection(symmetryBreaker = neighbours, radius = grain)
     // localLeaderElection(mid(), neighbours, 1, nbrRange, source => distanceTo(source, nbrRange))
   }
 }
