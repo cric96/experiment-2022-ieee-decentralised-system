@@ -13,4 +13,8 @@ trait ProcessFix extends CustomSpawn {
         .collectValues[R] { case (r, true) => r }
     })
   }
+
+  override def sspawn2[K, A, R](process: K => A => POut[R], params: Set[K], args: A): Map[K, R] =
+    spawn2[K, A, Option[R]](process.map(handleTermination).map(handleOutput), params, args)
+      .collectValues { case Some(p) => p }
 }

@@ -66,7 +66,6 @@ trait BlockSWithProcesses {
       node.put("leaders", leaders)
       val closeEnough = leaders.filter { case (_, LeaderProcessOutput(_, distance)) => distance < radius }
       node.put("close-enough", closeEnough)
-      node.put("leader", mux(leadId == id)(1)(0))
       // choose the leader using the breaking symmetry value
       selectLeader(closeEnough).getOrElse(default)
     }._1
