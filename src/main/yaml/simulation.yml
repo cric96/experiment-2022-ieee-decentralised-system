@@ -9,7 +9,7 @@ _program: &program
     type: Event
     actions:
       - type: RunScafiProgram
-        parameters: [ it.unibo.scafi.LeaderElection ]
+        parameters: [ it.unibo.scafi.LeaderElection , 5]
   - program: send
 
 deployments:
