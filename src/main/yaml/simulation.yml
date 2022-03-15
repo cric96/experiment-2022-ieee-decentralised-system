@@ -1,4 +1,7 @@
 incarnation: scafi
+environment:
+  type: OSMEnvironment
+  parameters: ["toronto.pbf", false]
 
 network-model:
   type: ConnectWithinDistance
@@ -9,16 +12,11 @@ _program: &program
     type: Event
     actions:
       - type: RunScafiProgram
-        parameters: [ it.unibo.scafi.LeaderElection , 5]
+        parameters: [it.unibo.scafi.LeaderElection,5]
   - program: send
 
 deployments:
-  type: Grid
-  parameters: [-5, -5, 5, 5, 0.5, 0.5, 0.1, 0.1]
+  type: FromGPSTrace
+  parameters: [ 58, "toronto", true, "AlignToSimulationTime" ]
   programs: *program
-  contents:
-    - in:
-        type: Rectangle
-        parameters: [-6, -6, 2, 2]
-      molecule: source
-      concentration: true
+

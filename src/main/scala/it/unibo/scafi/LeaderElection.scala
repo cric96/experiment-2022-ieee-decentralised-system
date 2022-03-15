@@ -1,4 +1,5 @@
 package it.unibo.scafi
+import it.unibo.alchemist.loader.m2m.syntax.DocumentRoot.Deployment
 import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import it.unibo.scafi.incarnation.{BlockSWithProcesses, ProcessFix}
 class LeaderElection
