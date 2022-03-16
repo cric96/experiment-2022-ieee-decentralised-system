@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="gpx.py -- https://github.com/tkrajina/gpxpy">
+  <trk>
+    <name>toronto-rain-7691.gpx</name>
+    <trkseg>
+      <trkpt lat="43.76907" lon="-79.36518">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7693.gpx</name>
+    <trkseg>
+      <trkpt lat="43.72039" lon="-79.51381">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7708.gpx</name>
+    <trkseg>
+      <trkpt lat="43.73297" lon="-79.26146">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7683.gpx</name>
+    <trkseg>
+      <trkpt lat="43.73922" lon="-79.58164">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-8018.gpx</name>
+    <trkseg>
+      <trkpt lat="43.74597" lon="-79.51458">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7715.gpx</name>
+    <trkseg>
+      <trkpt lat="43.79059" lon="-79.42229">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7690.gpx</name>
+    <trkseg>
+      <trkpt lat="43.75466" lon="-79.54886">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7674.gpx</name>
+    <trkseg>
+      <trkpt lat="43.69735" lon="-79.46603">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7687.gpx</name>
+    <trkseg>
+      <trkpt lat="43.60813" lon="-79.52037">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7696.gpx</name>
+    <trkseg>
+      <trkpt lat="43.80009" lon="-79.37136">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7706.gpx</name>
+    <trkseg>
+      <trkpt lat="43.6949" lon="-79.28446">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7682.gpx</name>
+    <trkseg>
+      <trkpt lat="43.67672" lon="-79.33114">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7716.gpx</name>
+    <trkseg>
+      <trkpt lat="43.65039" lon="-79.58503">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7703.gpx</name>
+    <trkseg>
+      <trkpt lat="43.73408" lon="-79.35836">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7681.gpx</name>
+    <trkseg>
+      <trkpt lat="43.66127" lon="-79.3751">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7702.gpx</name>
+    <trkseg>
+      <trkpt lat="43.65867" lon="-79.32013">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7685.gpx</name>
+    <trkseg>
+      <trkpt lat="43.68343" lon="-79.54147">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7710.gpx</name>
+    <trkseg>
+      <trkpt lat="43.69145" lon="-79.4482">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7699.gpx</name>
+    <trkseg>
+      <trkpt lat="43.81845" lon="-79.25725">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7677.gpx</name>
+    <trkseg>
+      <trkpt lat="43.64768" lon="-79.47811">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7714.gpx</name>
+    <trkseg>
+      <trkpt lat="43.66415" lon="-79.49112">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7686.gpx</name>
+    <trkseg>
+      <trkpt lat="43.63806" lon="-79.52828">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7679.gpx</name>
+    <trkseg>
+      <trkpt lat="43.65662" lon="-79.40509">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7704.gpx</name>
+    <trkseg>
+      <trkpt lat="43.77751" lon="-79.14841">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-8017.gpx</name>
+    <trkseg>
+      <trkpt lat="43.70059" lon="-79.51261">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-14212.gpx</name>
+    <trkseg>
+      <trkpt lat="43.8084" lon="-79.21624">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-14209.gpx</name>
+    <trkseg>
+      <trkpt lat="43.6359" lon="-79.3972">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7701.gpx</name>
+    <trkseg>
+      <trkpt lat="43.79378" lon="-79.19433">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7705.gpx</name>
+    <trkseg>
+      <trkpt lat="43.70612" lon="-79.40473">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7712.gpx</name>
+    <trkseg>
+      <trkpt lat="43.70871" lon="-79.45631">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7688.gpx</name>
+    <trkseg>
+      <trkpt lat="43.76985" lon="-79.47161">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-8049.gpx</name>
+    <trkseg>
+      <trkpt lat="43.72887" lon="-79.44334">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-14211.gpx</name>
+    <trkseg>
+      <trkpt lat="43.67392" lon="-79.29881">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7713.gpx</name>
+    <trkseg>
+      <trkpt lat="43.64285" lon="-79.5647">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7700.gpx</name>
+    <trkseg>
+      <trkpt lat="43.76974" lon="-79.27245">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7698.gpx</name>
+    <trkseg>
+      <trkpt lat="43.81233" lon="-79.30554">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7678.gpx</name>
+    <trkseg>
+      <trkpt lat="43.6512" lon="-79.44362">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7707.gpx</name>
+    <trkseg>
+      <trkpt lat="43.76901" lon="-79.17723">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7709.gpx</name>
+    <trkseg>
+      <trkpt lat="43.74841" lon="-79.40692">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7694.gpx</name>
+    <trkseg>
+      <trkpt lat="43.73251" lon="-79.46572">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-14210.gpx</name>
+    <trkseg>
+      <trkpt lat="43.78712" lon="-79.33714">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7697.gpx</name>
+    <trkseg>
+      <trkpt lat="43.75957" lon="-79.32613">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7684.gpx</name>
+    <trkseg>
+      <trkpt lat="43.69492" lon="-79.57194">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7711.gpx</name>
+    <trkseg>
+      <trkpt lat="43.71777" lon="-79.57058">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-14213.gpx</name>
+    <trkseg>
+      <trkpt lat="43.7401" lon="-79.21683">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7695.gpx</name>
+    <trkseg>
+      <trkpt lat="43.77444" lon="-79.40841">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7680.gpx</name>
+    <trkseg>
+      <trkpt lat="43.67834" lon="-79.40283">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7692.gpx</name>
+    <trkseg>
+      <trkpt lat="43.72393" lon="-79.31385">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7676.gpx</name>
+    <trkseg>
+      <trkpt lat="43.76523" lon="-79.51884">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>toronto-rain-7675.gpx</name>
+    <trkseg>
+      <trkpt lat="43.70313" lon="-79.34328">
+        <time>2021-01-01T00:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

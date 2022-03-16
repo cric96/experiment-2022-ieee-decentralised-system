@@ -17,6 +17,6 @@ _program: &program
 
 deployments:
   type: FromGPSTrace
-  parameters: [ 58, "toronto", true, "AlignToSimulationTime" ]
+  parameters: [ 50, "toronto", false, "AlignToSimulationTime" ]
   programs: *program
 

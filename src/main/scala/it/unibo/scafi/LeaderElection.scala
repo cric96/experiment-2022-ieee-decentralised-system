@@ -1,5 +1,4 @@
 package it.unibo.scafi
-import it.unibo.alchemist.loader.m2m.syntax.DocumentRoot.Deployment
 import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import it.unibo.scafi.incarnation.{BlockSWithProcesses, ProcessFix}
 class LeaderElection
@@ -11,9 +10,14 @@ class LeaderElection
     with BlockG
     with BlockSWithProcesses {
   lazy val grain = 3
+
   override def main(): Any = {
     val neighbours = excludingSelf.sumHood(nbr(1))
+    node.put("water-level", perceiveWaterLevel())
     localLeaderElection(symmetryBreaker = neighbours, radius = grain)
     // localLeaderElection(mid(), neighbours, 1, nbrRange, source => distanceTo(source, nbrRange))
   }
+
+  def perceiveWaterLevel(): Double =
+    SensorTrace.perceive(currentPosition(), timestamp())
 }
