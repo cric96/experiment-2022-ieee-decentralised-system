@@ -33,7 +33,7 @@ object SensorTrace {
       .all()
       .tail
       .map(marshallData)
-      .tapEach { case Failure(exception) => println(exception.getMessage + exception.getCause); case _ => }
+      .tapEach { case Failure(exception) => println(exception.getMessage + exception.getCause); case _ => } // TODO fix
       .collect { case Success(value) => value }
       .groupMap { case (k, v) => k } { case (k, v) => v }
       .toVector
