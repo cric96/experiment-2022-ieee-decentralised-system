@@ -1,3 +1,3 @@
 package it.unibo.geo.altitude
 
-object AltitudeService extends CanadianService {}
+object AltitudeService extends AltitudeFromResource("altitude.json")

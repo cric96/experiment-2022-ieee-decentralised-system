@@ -1,5 +1,9 @@
 import java.awt.GraphicsEnvironment
 import java.io.ByteArrayOutputStream
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.net.URL
 
 plugins {
     application
@@ -9,6 +13,7 @@ plugins {
     alias(libs.plugins.multiJvmTesting)
     alias(libs.plugins.taskTree)
     scala
+    kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
 
 repositories {
@@ -54,12 +59,16 @@ dependencies {
     implementation(libs.scalacsv)
     implementation(libs.requests)
     implementation(libs.ujson)
+    implementation(libs.upickle)
+    implementation(libs.smile)
     implementation(libs.bundles.monocle.full)
     // Test
     testImplementation(libs.junit.core)
     testRuntimeOnly(libs.junit.engine)
-}
+    // Kotlin deps
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
+}
 // Heap size estimation for batches
 val maxHeap: Long? by project
 val heap: Long = maxHeap ?: if (System.getProperty("os.name").toLowerCase().contains("linux")) {

@@ -8,6 +8,8 @@ monocle = "3.1.0"
 scalacsv = "1.3.10"
 requests = "0.7.0"
 ujson = "1.5.0"
+upickle = "1.4.3"
+smile = "2.6.0"
 
 [libraries]
 alchemist = { module = "it.unibo.alchemist:alchemist", version.ref = "alchemist" }
@@ -21,6 +23,8 @@ monocle-macro = { module = "dev.optics:monocle-macro_2.13", version.ref = "monoc
 scalacsv = { module = "com.github.tototoshi:scala-csv_2.13", version.ref = "scalacsv" }
 requests = { module = "com.lihaoyi:requests_2.13", version.ref = "requests" }
 ujson = { module = "com.lihaoyi:ujson_2.13", version.ref = "ujson" }
+upickle = { module = "com.lihaoyi:upickle_2.13", version.ref = "upickle" }
+smile = { module = "com.github.haifengl:smile-scala_2.13", version.ref = "smile" }
 
 [bundles]
 alchemist-protelis = [ "alchemist", "alchemist-protelis" ]
