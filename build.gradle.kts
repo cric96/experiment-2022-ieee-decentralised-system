@@ -11,10 +11,6 @@ plugins {
     scala
 }
 
-val scalaMajorVersion = "2.13"
-val scalaVersion = "${scalaMajorVersion}.6"
-val monocle = "3.1.0" // put it in catalog?
-
 repositories {
     mavenCentral()
 }
@@ -50,10 +46,12 @@ dependencies {
         implementation("it.unibo.alchemist:alchemist-swingui:${libs.versions.alchemist.get()}")
     }
     // Scala Deps
-    implementation("org.scala-lang:scala-library:$scalaVersion")
-    implementation("com.github.tototoshi:scala-csv_$scalaMajorVersion:1.3.10")
-    implementation("dev.optics:monocle-core_${scalaMajorVersion}:$monocle")
-    implementation("dev.optics:monocle-macro_${scalaMajorVersion}:$monocle")
+    implementation(libs.scala)
+    implementation(libs.scalacsv)
+    implementation(libs.bundles.monocle.full)
+    // Test
+    testImplementation(libs.junit.core)
+    testRuntimeOnly(libs.junit.engine)
 }
 
 // Heap size estimation for batches

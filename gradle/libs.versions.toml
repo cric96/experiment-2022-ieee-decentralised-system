@@ -1,15 +1,26 @@
 [versions]
 alchemist = "13.0.2"
 kotlin = "1.6.10"
+junit = "5.8.2"
+scala = "2.13.6"
+scalaMajor = "2.13"
+monocle = "3.1.0"
+scalacsv = "1.3.10"
 
 [libraries]
 alchemist = { module = "it.unibo.alchemist:alchemist", version.ref = "alchemist" }
 alchemist-protelis = { module = "it.unibo.alchemist:alchemist-incarnation-protelis", version.ref = "alchemist" }
 alchemist-scafi = { module = "it.unibo.alchemist:alchemist-incarnation-scafi", version.ref = "alchemist" }
-
+junit-core = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+scala = { module = "org.scala-lang:scala-library", version.ref = "scala" }
+monocle-core = { module = "dev.optics:monocle-core_2.13", version.ref = "monocle" }
+monocle-macro = { module = "dev.optics:monocle-macro_2.13", version.ref = "monocle" }
+scalacsv = { module = "com.github.tototoshi:scala-csv_2.13", version.ref = "scalacsv" }
 [bundles]
 alchemist-protelis = [ "alchemist", "alchemist-protelis" ]
 alchemist-scafi = [ "alchemist", "alchemist-scafi" ]
+monocle-full = [ "monocle-core", "monocle-macro" ]
 
 [plugins]
 gitSemVer = { id = "org.danilopianini.git-sensitive-semantic-versioning", version = "0.3.0" }
