@@ -8,7 +8,7 @@ network-model:
   parameters: [0.75]
 
 _program: &program
-  - time-distribution: 1
+  - time-distribution: 0.1
     type: Event
     actions:
       - type: RunScafiProgram

@@ -1,6 +1,7 @@
 package it.unibo.scafi
 import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import it.unibo.scafi.incarnation.{BlockSWithProcesses, ProcessFix}
+import it.unibo.scafi.space.Point3D
 class LeaderElection
     extends AggregateProgram
     with StandardSensors
@@ -13,11 +14,11 @@ class LeaderElection
 
   override def main(): Any = {
     val neighbours = excludingSelf.sumHood(nbr(1))
-    node.put("water-level", perceiveWaterLevel())
     localLeaderElection(symmetryBreaker = neighbours, radius = grain)
-    // localLeaderElection(mid(), neighbours, 1, nbrRange, source => distanceTo(source, nbrRange))
+    node.put("water-level", perceiveWaterLevel())
+    node.put("id", mid())
   }
 
   def perceiveWaterLevel(): Double =
-    SensorTrace.perceive(currentPosition(), timestamp())
+    SensorTrace.perceive(currentPosition(), alchemistTimestamp.toDouble)
 }

@@ -4,7 +4,6 @@ import com.github.tototoshi.csv.CSVReader
 import it.unibo.scafi.space.{Point2D, Point3D}
 import monocle.syntax.all._
 
-import java.text.SimpleDateFormat
 import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -38,12 +37,12 @@ object SensorTrace {
       .groupMap { case (k, v) => k } { case (k, v) => v }
       .toVector
       .map { case (when, data) => SpatioTemporalRecord(when, data) }
-      .sortBy(_.when)(Ordering[Double].reverse)
+      .sortBy(_.when)
   }
 
   private def marshallData(elements: List[String]): Try[(Double, SensorData)] = elements match {
-    case l @ entry :: id :: tpe :: date :: rainfall :: long :: lat :: seconds :: _ =>
-      Try(seconds.toDouble -> SensorData(Point2D(long.toDouble, lat.toDouble), rainfall.toDouble))
+    case entry :: id :: tpe :: date :: rainfall :: long :: lat :: seconds :: _ =>
+      Try(seconds.toDouble -> SensorData(Point2D(lat.toDouble, long.toDouble), rainfall.toDouble))
     case line =>
       Failure(new IllegalArgumentException(s"problems with csv file, line that throws the exception = $line"))
   }
@@ -55,13 +54,13 @@ object SensorTrace {
 
   private def temporalSearch(when: Double, data: SpatioTemporalData): SpatioTemporalRecord = {
     @tailrec
-    def binarySearch(boundLeft: Int, boundRight: Int): SpatioTemporalRecord = if (boundRight > boundLeft) { //
+    def binarySearch(boundLeft: Int, boundRight: Int): SpatioTemporalRecord = if (boundLeft > boundRight) { //
       data.last
     } else {
       val centerIndex = (boundLeft + boundRight) / 2
       val center = data(centerIndex)
-      if (center.when == when || center.when < when && centerIndex > 0 && data(centerIndex - 1).when > when) {
-        data(centerIndex - 1)
+      if (center.when == when || (center.when < when && centerIndex < data.size && data(centerIndex + 1).when > when)) {
+        data(centerIndex)
       } else if (center.when > when) {
         binarySearch(boundLeft, centerIndex - 1)
       } else {

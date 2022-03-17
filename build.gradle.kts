@@ -25,6 +25,10 @@ sourceSets {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 val usesJvm: Int = File(File(projectDir, "util"), "Dockerfile")
     .readText()
     .let {
