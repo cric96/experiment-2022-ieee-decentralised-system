@@ -10,16 +10,18 @@ class LeaderElection
     with ProcessFix
     with BlockG
     with BlockSWithProcesses {
-  lazy val grain = 3
+  lazy val grain = 20000
 
   override def main(): Any = {
-    val neighbours = excludingSelf.sumHood(nbr(1))
     val waterLevel = perceiveWaterLevel()
     val altitude = altitudeLevel()
-    val election = localLeaderElection(symmetryBreaker = neighbours, radius = grain)
+    val waterArea =
+      localLeaderElection(symmetryBreaker = mid(), radius = grain, distance = distanceTo(_, () => waterLevel))
+    val altitudeArea =
+      localLeaderElection(symmetryBreaker = mid(), radius = grain, distance = distanceTo(_, () => altitude))
     node.put("water-level", waterLevel)
     node.put("altitude", altitude)
-    election
+    waterArea
   }
 
   def altitudeLevel(): Double = AltitudeService.in(currentPosition()._1, currentPosition()._2)

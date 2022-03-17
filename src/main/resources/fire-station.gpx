@@ -1,0 +1,432 @@
+﻿{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2022-03-17T17:05:15Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/267130380",
+        "amenity": "fire_station",
+        "created_by": "Potlatch 0.9b",
+        "name": "Toronto Fire Station #224"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.3165712,
+          43.6952274
+        ]
+      },
+      "id": "node/267130380"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/315648416",
+        "addr:city": "Toronto",
+        "addr:housenumber": "1904",
+        "addr:street": "Queen Street East",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 227"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.3050117,
+          43.6690702
+        ]
+      },
+      "id": "node/315648416"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/380199492",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.1481339,
+          43.7774204
+        ]
+      },
+      "id": "node/380199492"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/410801436",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 222"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2840196,
+          43.7204081
+        ]
+      },
+      "id": "node/410801436"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/438063525",
+        "amenity": "fire_station"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2649478,
+          43.6998201
+        ]
+      },
+      "id": "node/438063525"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/438066943",
+        "addr:city": "Scarborough",
+        "addr:housenumber": "3600",
+        "addr:street": "Danforth Avenue",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 225"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2683603,
+          43.6958276
+        ]
+      },
+      "id": "node/438066943"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/502030808",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 343"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.430809,
+          43.6801003
+        ]
+      },
+      "id": "node/502030808"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/550881334",
+        "amenity": "fire_station",
+        "built_date": "1910",
+        "name": "Toronto Fire Station 226",
+        "old_ref": "22"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2990263,
+          43.6818629
+        ]
+      },
+      "id": "node/550881334"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/609290577",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 143"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.459715,
+          43.7506185
+        ]
+      },
+      "id": "node/609290577"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/618407561",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 223"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2331645,
+          43.7239969
+        ]
+      },
+      "id": "node/618407561"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/774102361",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 433",
+        "operator": "Toronto Fire Services"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.502951,
+          43.6280306
+        ]
+      },
+      "id": "node/774102361"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1601962650",
+        "addr:city": "North York",
+        "addr:housenumber": "2220",
+        "addr:street": "Jane Street",
+        "amenity": "fire_station",
+        "name": "Fire Station 146",
+        "opendata:type": "103002"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.509764,
+          43.7235852
+        ]
+      },
+      "id": "node/1601962650"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1946043617",
+        "addr:city": "Mississauga",
+        "addr:housenumber": "62",
+        "addr:street": "Port Street West",
+        "amenity": "fire_station",
+        "name": "Mississauga Fire Station 104",
+        "phone": "+1-905-615-3777"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.5882463,
+          43.5477707
+        ]
+      },
+      "id": "node/1946043617"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/2275421995",
+        "addr:city": "Mississauga",
+        "addr:housenumber": "1355",
+        "addr:street": "Winding Trail",
+        "amenity": "fire_station",
+        "name": "Mississauga Fire Station 106",
+        "note": "New location of station 16",
+        "operator": "Mississauga Fire"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.5995469,
+          43.6192474
+        ]
+      },
+      "id": "node/2275421995"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/2275800977",
+        "addr:city": "Mississauga",
+        "addr:housenumber": "1735",
+        "addr:street": "Britannia Road East",
+        "alt_name": "Joseph R. Miller Training Centre",
+        "amenity": "fire_station",
+        "name": "Mississauga Fire Station 109"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.6419355,
+          43.6608606
+        ]
+      },
+      "id": "node/2275800977"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/2694848146",
+        "amenity": "fire_station"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.1215924,
+          43.8137339
+        ]
+      },
+      "id": "node/2694848146"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3372198957",
+        "addr:city": "York",
+        "addr:housenumber": "2015",
+        "addr:street": "Lawrence Avenue West",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 442",
+        "opendata:type": "103005"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.5123407,
+          43.7007003
+        ]
+      },
+      "id": "node/3372198957"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4060811999",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 243"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2630374,
+          43.7892319
+        ]
+      },
+      "id": "node/4060811999"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4945495870",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 421"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.4852713,
+          43.6841961
+        ]
+      },
+      "id": "node/4945495870"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5133712453",
+        "addr:city": "Scarborough",
+        "addr:housenumber": "90",
+        "addr:postcode": "M1X 1C3",
+        "addr:street": "Tapscott Road",
+        "amenity": "fire_station",
+        "name": "Toronto Fire Station 211",
+        "operator": "City of Toronto"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2428632,
+          43.8239505
+        ]
+      },
+      "id": "node/5133712453"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5158212975",
+        "amenity": "fire_station"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2259766,
+          43.7954069
+        ]
+      },
+      "id": "node/5158212975"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6554833767",
+        "amenity": "fire_station",
+        "name": "Vaughan Fire Station 7-3",
+        "operator": "Vaughan"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.6095286,
+          43.7740683
+        ]
+      },
+      "id": "node/6554833767"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6907476666",
+        "amenity": "fire_station",
+        "name": "Mississauga Fire Station 119"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.6255347,
+          43.6923654
+        ]
+      },
+      "id": "node/6907476666"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/7990327543",
+        "addr:city": "Thornhill",
+        "addr:housenumber": "111",
+        "addr:postcode": "L4J 8X9",
+        "addr:province": "Ontario",
+        "addr:street": "Racco Parkway",
+        "amenity": "fire_station",
+        "name": "Vaughan Fire Station 7-8",
+        "operator": "City of Vaughan"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.4738316,
+          43.8154104
+        ]
+      },
+      "id": "node/7990327543"
+    }
+  ]
+}

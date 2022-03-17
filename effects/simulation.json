@@ -91,14 +91,14 @@
     "size": {
       "max": 100,
       "min": 0,
-      "val": 10
+      "val": 20
     },
     "molFilter": true,
-    "molString": "it.unibo.scafi.LeaderElection",
+    "molString": "altitude",
     "molPropertyFilter": true,
-    "property": "\u003cvalue\u003e % 17",
+    "property": "\u003cvalue\u003e / 10",
     "writingPropertyValue": false,
-    "c": "HUE",
+    "c": "SATURATION",
     "reverse": false,
     "propoom": {
       "max": 10,
@@ -151,12 +151,13 @@
     "size": {
       "max": 100,
       "min": 0,
-      "val": 5
+      "val": 10
     },
     "molFilter": true,
-    "molString": "leader",
-    "molPropertyFilter": "true",
-    "property": "<value> * 100",
+    "molString": "it.unibo.scafi.LeaderElection",
+    "molPropertyFilter": true,
+    "property": "\u003cvalue\u003e % 17",
+    "writingPropertyValue": false,
     "c": "HUE",
     "reverse": false,
     "propoom": {
@@ -174,7 +175,6 @@
       "min": -10,
       "val": 2
     },
-
     "colorCache": {
       "value": -16776961
     }
