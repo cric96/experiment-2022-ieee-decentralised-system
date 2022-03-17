@@ -52,6 +52,8 @@ dependencies {
     // Scala Deps
     implementation(libs.scala)
     implementation(libs.scalacsv)
+    implementation(libs.requests)
+    implementation(libs.ujson)
     implementation(libs.bundles.monocle.full)
     // Test
     testImplementation(libs.junit.core)
