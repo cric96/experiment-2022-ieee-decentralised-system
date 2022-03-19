@@ -10,8 +10,8 @@ tmp_folder = "./tmp/"
 target_folder = "./src/main/resources/toronto/"
 toronto_data = "./toronto.csv"
 toronto_reduced_data = "./src/main/resources/toronto.csv"
-startingSeconds = 15500000
-endingSeconds = 15600000
+startingSeconds = 21575000
+endingSeconds = 21620000
 precision = 5
 ## remove prev folder
 shutil.rmtree(tmp_folder, ignore_errors=True)

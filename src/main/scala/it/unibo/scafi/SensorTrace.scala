@@ -70,6 +70,9 @@ object SensorTrace {
     binarySearch(0, data.size)
   }
 
-  private def spatialSearch(where: Point3D, record: SpatioTemporalRecord): Double =
-    record.data.minBy(_.geoPosition.distance(where)).data
+  private def spatialSearch(where: Point3D, record: SpatioTemporalRecord): Double = {
+    record.data.sortBy(_.geoPosition.distance(where)) match {
+      case first :: second :: rest => (first.data + second.data) / 2
+    }
+  }
 }

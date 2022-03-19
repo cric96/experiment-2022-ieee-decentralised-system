@@ -14,25 +14,41 @@ network-model:
   type: ConnectWithinDistance
   parameters: [2000]
 
+_shared: &shared
+  - molecule: grain
+    concentration: 20000.0
+  - molecule: waterLevelWeight
+    concentration: 0.2
 _program: &program
-  - time-distribution: 0.1
+  - time-distribution: 0.01
     type: Event
     actions:
       - type: RunScafiProgram
-        parameters: [it.unibo.scafi.LeaderElection,5]
+        parameters: [it.unibo.scafi.LeaderElection, 5]
   - program: send
 
 deployments:
+  ##### REAL SENSOR TRACE
   - type: FromGPSTrace
     parameters: [ 50, "toronto", false, "AlignToSimulationTime" ]
     programs: *program
+    contents:
+      shared: *shared
+      costum:
+        molecule: real
+        concentration: true
+  ##### FIRE STATION
   - type: SpecificPositions
     parameters: *fire
     programs: *program
-  - type: FromGPSTrace
-    parameters: [ 50, "fire-station.gpx", false, "AlignToSimulationTime" ]
-    programs: *program
+    contents:
+      shared: *shared
+      costum:
+        molecule: fire
+        concentration: true
+  ##### SIMULATED RAIN GAUGE
   - type: CloseToAlreadyDeployed
     parameters: [ 300, 0.0002 ]
     programs: *program
-
+    contents:
+      shared: *shared
