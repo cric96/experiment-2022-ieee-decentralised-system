@@ -51,9 +51,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(libs.bundles.alchemist.protelis)
     implementation(libs.bundles.alchemist.scafi)
-    if (!GraphicsEnvironment.isHeadless()) {
-        implementation("it.unibo.alchemist:alchemist-swingui:${libs.versions.alchemist.get()}")
-    }
+    implementation("it.unibo.alchemist:alchemist-swingui:${libs.versions.alchemist.get()}")
     // Scala Deps
     implementation(libs.scala)
     implementation(libs.scalacsv)
