@@ -56,11 +56,11 @@ trait BlockSWithProcesses {
       distance: Distance = distanceTo(_, nbrRange)
   ): ID = {
     val default = id -> LeaderProcessOutput(symmetryBreaker, 0.0)
-    rep(default) { case (leadId, _) =>
+    rep(default) { case (leadId, leadSymmetryBreaker) =>
       // compute the leaders using processes, in jointing point multiple leader could exists
       val leaders: Map[ID, LeaderProcessOutput] = sspawn2[ID, LeaderProcessInput, LeaderProcessOutput](
         processDefinition,
-        mux(id == leadId)(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
+        mux(id == leadId || (symmetryBreaker, id) > (leadSymmetryBreaker.symmetryBreaker, leadId))(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
         LeaderProcessInput(leadId, id, symmetryBreaker, radius, distance)
       )
       node.put("leaders", leaders)
