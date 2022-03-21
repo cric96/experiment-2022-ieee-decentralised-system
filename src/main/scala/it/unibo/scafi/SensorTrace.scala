@@ -15,7 +15,7 @@ object SensorTrace {
   private type SpatioTemporalData = Seq[SpatioTemporalRecord]
   // Constant
   private lazy val rainGaugeData = normalise(loadFromSource(Source.fromResource("toronto.csv")))
-  private lazy val adjustTimeFactor: Double = 10.0 // used to reduce the total simulation time, to understand how to use
+  private lazy val adjustTimeFactor: Double = 1.0 // used to reduce the total simulation time, to understand how to use
   def perceive(where: Point3D, at: Double): Double =
     spatialSearch(where, temporalSearch(at, rainGaugeData))
 
