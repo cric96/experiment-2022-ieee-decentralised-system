@@ -14,8 +14,8 @@ object SensorTrace {
   final private case class SpatioTemporalRecord(when: Double, data: Seq[SensorData])
   private type SpatioTemporalData = Seq[SpatioTemporalRecord]
   // Constant
-  private val rainGaugeData = normalise(loadFromSource(Source.fromResource("toronto.csv")))
-
+  private lazy val rainGaugeData = normalise(loadFromSource(Source.fromResource("toronto.csv")))
+  private lazy val adjustTimeFactor: Double = 10.0 // used to reduce the total simulation time, to understand how to use
   def perceive(where: Point3D, at: Double): Double =
     spatialSearch(where, temporalSearch(at, rainGaugeData))
 
@@ -42,7 +42,7 @@ object SensorTrace {
 
   private def marshallData(elements: List[String]): Try[(Double, SensorData)] = elements match {
     case entry :: id :: tpe :: date :: rainfall :: long :: lat :: seconds :: _ =>
-      Try(seconds.toDouble -> SensorData(Point2D(lat.toDouble, long.toDouble), rainfall.toDouble))
+      Try((seconds.toDouble / adjustTimeFactor) -> SensorData(Point2D(lat.toDouble, long.toDouble), rainfall.toDouble))
     case line =>
       Failure(new IllegalArgumentException(s"problems with csv file, line that throws the exception = $line"))
   }

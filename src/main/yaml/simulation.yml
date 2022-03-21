@@ -20,7 +20,7 @@ _shared: &shared
   - molecule: waterLevelWeight
     concentration: 0.2
 _program: &program
-  - time-distribution: 0.01
+  - time-distribution: 0.1
     type: Event
     actions:
       - type: RunScafiProgram

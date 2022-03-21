@@ -216,9 +216,9 @@
       "val": 20
     },
     "molFilter": true,
-    "molString": "altitude",
+    "molString": "water-level",
     "molPropertyFilter": true,
-    "property": "\u003cvalue\u003e / 10",
+    "property": "\u003cvalue\u003e * 10",
     "writingPropertyValue": false,
     "c": "SATURATION",
     "reverse": false,
