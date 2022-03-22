@@ -18,8 +18,7 @@ class LeaderElection
     val waterLevel = perceiveWaterLevel()
     val altitude = altitudeLevel()
     val altitudeMetric: Metric = () => math.hypot(nbrRange(), altitude - nbr(altitude))
-    val waterLevelMetric: Metric = () =>
-      nbrRange() * (1 + math.abs(waterLevel - nbr(waterLevel)))
+    val waterLevelMetric: Metric = () => nbrRange() * (1 + math.abs(waterLevel - nbr(waterLevel)))
 //      nbrRange() * (1 + waterLevel + nbr(waterLevel))
 //      (1 - waterLevelWeight) * nbrRange() + waterLevelWeight * math.abs(waterLevel + nbr(waterLevel) * adjustLevel)
     val waterArea =
