@@ -79,7 +79,7 @@ trait BlockSWithProcesses {
   private def processDefinition[S: Bounded]: ID => LeaderProcessInput[S] => POut[LeaderProcessOutput[S]] = id =>
     input => {
       val (status, gradient) = insideBubble(id)(input) // I check this zone is inside the bubble when id is the leader
-      branch(status == Terminated || status == External) { // if I am external or the process is terminated, return a default field
+      optBranch(status == Terminated || status == External) { // if I am external or the process is terminated, return a default field
         POut(LeaderProcessOutput(implicitly[Bounded[S]].bottom, Double.PositiveInfinity), status)
       } {
         POut(
@@ -91,7 +91,7 @@ trait BlockSWithProcesses {
 
   private def insideBubble[S]: ID => LeaderProcessInput[S] => (Status, Double) =
     processId => { case LeaderProcessInput(localLeader, uid, _, radius, distanceFunction) =>
-      branch(processId == uid && uid != localLeader) {
+      optBranch(processId == uid && uid != localLeader) {
         // started the process, but I am not the leader anymore, so I suppress that process
         (Terminated, Double.PositiveInfinity)
       } {
@@ -129,4 +129,7 @@ trait BlockSWithProcesses {
       mux(source)(data)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbrField()))
     }
   }
+
+  def optBranch[A](cond: Boolean)(th: A)(el: A): A =
+    align(vm.index)(_ => align(cond)(mux(_)(th)(el)))
 }
