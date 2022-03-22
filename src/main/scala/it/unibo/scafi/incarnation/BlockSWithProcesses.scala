@@ -1,13 +1,17 @@
 package it.unibo.scafi.incarnation
 
 import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
-import Ordered._ // help implicit conversion
+
+import Ordered._
+import Builtins._ // for type classes
 
 trait BlockSWithProcesses {
   self: AggregateProgram with ProcessFix with BlockG with ScafiAlchemistSupport with StandardSensors =>
   import SpawnInterface._ // for statuses
+  // Conversions
+  implicit def boundedToOrdering[A: Bounded]: Ordering[A] = (x: A, y: A) => implicitly[Bounded[A]].compare(x, y)
+  def bounded[A: Bounded]: Bounded[A] = implicitly[Bounded[A]]
   // Types
-  type SymmetryBreaker = Double // but could be a lambda???
   type Distance =
     Boolean => Double // or in general, it could be type Distance[D: Numeric] = Boolean => D, or another type context
   // Data
@@ -17,7 +21,7 @@ trait BlockSWithProcesses {
     * @param distanceFromLeader
     *   the distance (using a certain metric)
     */
-  case class LeaderProcessOutput(symmetryBreaker: SymmetryBreaker, distanceFromLeader: Double)
+  case class LeaderProcessOutput[S](symmetryBreaker: S, distanceFromLeader: Double)
 
   /** @param localLeader
     *   the current leader field produce by processes
@@ -30,10 +34,10 @@ trait BlockSWithProcesses {
     * @param distance
     *   the strategy used to compute the distance from the leader
     */
-  case class LeaderProcessInput(
+  case class LeaderProcessInput[S](
       localLeader: ID,
       localId: ID,
-      breaker: SymmetryBreaker,
+      breaker: S,
       radius: Double,
       distance: Distance
   )
@@ -49,17 +53,17 @@ trait BlockSWithProcesses {
     *   the strategy used to compute the distance from the leader
     * @return
     */
-  def localLeaderElection(
+  def localLeaderElection[S: Bounded](
       id: ID = mid(),
-      symmetryBreaker: SymmetryBreaker,
+      symmetryBreaker: S,
       radius: Double,
       distanceFunction: Distance = distanceTo(_, nbrRange)
   ): ID = {
-    val default = id -> LeaderProcessOutput(symmetryBreaker, 0.0)
+    val default = id -> LeaderProcessOutput[S](symmetryBreaker, 0.0)
     rep(default) { case (leadId, leadOutput) =>
       val shouldStartProcess = id == leadId || (symmetryBreaker, id) > (leadOutput.symmetryBreaker, leadId)
       // compute the leaders using processes, in jointing point multiple leader could exists
-      val leaders: Map[ID, LeaderProcessOutput] = sspawn2[ID, LeaderProcessInput, LeaderProcessOutput](
+      val leaders: Map[ID, LeaderProcessOutput[S]] = sspawn2[ID, LeaderProcessInput[S], LeaderProcessOutput[S]](
         processDefinition,
         mux(shouldStartProcess)(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
         LeaderProcessInput(leadId, id, symmetryBreaker, radius, distanceFunction)
@@ -72,17 +76,20 @@ trait BlockSWithProcesses {
     }._1
   }
 
-  private val processDefinition: ID => LeaderProcessInput => POut[LeaderProcessOutput] = id =>
+  private def processDefinition[S: Bounded]: ID => LeaderProcessInput[S] => POut[LeaderProcessOutput[S]] = id =>
     input => {
       val (status, gradient) = insideBubble(id)(input) // I check this zone is inside the bubble when id is the leader
       branch(status == Terminated || status == External) { // if I am external or the process is terminated, return a default field
-        POut(LeaderProcessOutput(Double.NegativeInfinity, Double.PositiveInfinity), status)
+        POut(LeaderProcessOutput(implicitly[Bounded[S]].bottom, Double.PositiveInfinity), status)
       } {
-        POut(expandBubble(gradient)(id)(input), Output) // Otherwise, I continue to expand the bubble in this zone
+        POut(
+          expandBubble(bounded[S])(gradient)(id)(input),
+          Output
+        ) // Otherwise, I continue to expand the bubble in this zone
       }
     }
 
-  private val insideBubble: ID => LeaderProcessInput => (Status, Double) =
+  private def insideBubble[S]: ID => LeaderProcessInput[S] => (Status, Double) =
     processId => { case LeaderProcessInput(localLeader, uid, _, radius, distanceFunction) =>
       branch(processId == uid && uid != localLeader) {
         // started the process, but I am not the leader anymore, so I suppress that process
@@ -90,11 +97,12 @@ trait BlockSWithProcesses {
       } {
         val distanceFromLeader = distanceFunction(processId == uid) // distance from the leader
         val inBubble = distanceFromLeader <= radius // check if this zone is inside the bubble
-        (mux(inBubble)(Output)(External), distanceFromLeader)
+        val anyNodeInBubble = includingSelf.anyHood(nbr(localLeader) == processId)
+        (mux(inBubble && anyNodeInBubble)(Output)(External), distanceFromLeader)
       }
     }
 
-  private val expandBubble: Double => ID => LeaderProcessInput => LeaderProcessOutput =
+  private def expandBubble[S: Bounded]: Double => ID => LeaderProcessInput[S] => LeaderProcessOutput[S] =
     gradient =>
       processId => { case LeaderProcessInput(_, uid, breaker, _, _) =>
         val source = processId == uid
@@ -103,8 +111,10 @@ trait BlockSWithProcesses {
       }
 
   // select the leader using the symmetric breaker
-  private def selectLeader(leaders: Map[ID, LeaderProcessOutput]): Option[(ID, LeaderProcessOutput)] = {
-    leaders.reduceOption[(ID, LeaderProcessOutput)] {
+  private def selectLeader[S: Bounded](
+      leaders: Map[ID, LeaderProcessOutput[S]]
+  ): Option[(ID, LeaderProcessOutput[S])] = {
+    leaders.reduceOption[(ID, LeaderProcessOutput[S])] {
       case (leaderA @ (idA, LeaderProcessOutput(breakerA, _)), leaderB @ (idB, LeaderProcessOutput(breakerB, _))) =>
         if ((breakerA, idA) > (breakerB, idB)) {
           leaderA
@@ -114,8 +124,8 @@ trait BlockSWithProcesses {
     }
   }
 
-  def broadcastAlong[D: Builtins.Bounded](source: Boolean, g: Double, data: D): D = {
-    share(data) { case (local, nbrField) =>
+  def broadcastAlong[D: Bounded](source: Boolean, g: Double, data: D): D = {
+    share(data) { case (_, nbrField) =>
       mux(source)(data)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbrField()))
     }
   }
