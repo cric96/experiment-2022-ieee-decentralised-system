@@ -25,7 +25,9 @@ def load_from_remote():
   csv2021 = package["result"]["resources"][0] ## prefer oldest data
   # Load csv as pandas
   print("download data...")
-  return pd.read_csv(csv2021["url"])
+  data = pd.read_csv(csv2021["url"])
+  data.to_csv(toronto_data)
+  return data
 
 def load_locally():
   print("load locally")
@@ -34,7 +36,7 @@ def load_locally():
 data = load_locally() if exists(toronto_data) else load_from_remote()
 correct_position = data.round(precision)
 # Store csv
-correct_position.to_csv(toronto_data)
+
 latlong = correct_position.drop_duplicates(subset = ["latitude", "longitude"])
 # Date to second
 date = pd.to_datetime(data.date, format="%Y-%m-%dT%H:%M:%S")
@@ -47,7 +49,6 @@ focus_on[["id","name","date","rainfall","longitude","latitude","seconds"]].to_cs
 # Store a gpx track for each element
 for id in latlong["id"].drop_duplicates():
   storeDf = latlong[latlong["id"] == id]
-
   print("store {0}".format(id))
   Converter.dataframe_to_gpx(
     input_df=storeDf,
