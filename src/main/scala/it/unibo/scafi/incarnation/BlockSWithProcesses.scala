@@ -56,11 +56,12 @@ trait BlockSWithProcesses {
       distance: Distance = distanceTo(_, nbrRange)
   ): ID = {
     val default = id -> LeaderProcessOutput(symmetryBreaker, 0.0)
-    rep(default) { case (leadId, leadSymmetryBreaker) =>
+    rep(default) { case (leadId, leadOutput) =>
+      val shouldStartProcess = id == leadId || (symmetryBreaker, id) > (leadOutput.symmetryBreaker, leadId)
       // compute the leaders using processes, in jointing point multiple leader could exists
       val leaders: Map[ID, LeaderProcessOutput] = sspawn2[ID, LeaderProcessInput, LeaderProcessOutput](
         processDefinition,
-        mux(id == leadId || (symmetryBreaker, id) > (leadSymmetryBreaker.symmetryBreaker, leadId))(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
+        mux(shouldStartProcess)(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
         LeaderProcessInput(leadId, id, symmetryBreaker, radius, distance)
       )
       node.put("leaders", leaders)
@@ -115,8 +116,7 @@ trait BlockSWithProcesses {
 
   def broadcastAlong[D: Builtins.Bounded](source: Boolean, g: Double, data: D): D = {
     share(data) { case (local, nbrField) =>
-      mux(source)(local)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbr(nbrField())))
+      mux(source)(data)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbrField()))
     }
   }
-
 }
