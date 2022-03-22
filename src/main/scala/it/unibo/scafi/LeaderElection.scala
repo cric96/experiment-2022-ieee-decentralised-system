@@ -22,7 +22,11 @@ class LeaderElection
 //      nbrRange() * (1 + waterLevel + nbr(waterLevel))
 //      (1 - waterLevelWeight) * nbrRange() + waterLevelWeight * math.abs(waterLevel + nbr(waterLevel) * adjustLevel)
     val waterArea =
-      localLeaderElection(symmetryBreaker = waterLevel, radius = grain, distance = fastGradient(_, waterLevelMetric))
+      localLeaderElection(
+        symmetryBreaker = waterLevel,
+        radius = grain,
+        distanceFunction = fastGradient(_, waterLevelMetric)
+      )
 //    val altitudeArea =
 //      localLeaderElection(symmetryBreaker = mid(), radius = grain, distance = fastGradient(_, altitudeMetric))
     node.put("water-level", waterLevel)

@@ -45,7 +45,7 @@ trait BlockSWithProcesses {
     *   simmetry breaker used during the leader election
     * @param radius
     *   the maxiumum influence area of a leader
-    * @param distance
+    * @param distanceFunction
     *   the strategy used to compute the distance from the leader
     * @return
     */
@@ -53,7 +53,7 @@ trait BlockSWithProcesses {
       id: ID = mid(),
       symmetryBreaker: SymmetryBreaker,
       radius: Double,
-      distance: Distance = distanceTo(_, nbrRange)
+      distanceFunction: Distance = distanceTo(_, nbrRange)
   ): ID = {
     val default = id -> LeaderProcessOutput(symmetryBreaker, 0.0)
     rep(default) { case (leadId, leadOutput) =>
@@ -62,7 +62,7 @@ trait BlockSWithProcesses {
       val leaders: Map[ID, LeaderProcessOutput] = sspawn2[ID, LeaderProcessInput, LeaderProcessOutput](
         processDefinition,
         mux(shouldStartProcess)(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
-        LeaderProcessInput(leadId, id, symmetryBreaker, radius, distance)
+        LeaderProcessInput(leadId, id, symmetryBreaker, radius, distanceFunction)
       )
       node.put("leaders", leaders)
       val closeEnough = leaders.filter { case (_, LeaderProcessOutput(_, distance)) => distance < radius }
@@ -83,12 +83,12 @@ trait BlockSWithProcesses {
     }
 
   private val insideBubble: ID => LeaderProcessInput => (Status, Double) =
-    processId => { case LeaderProcessInput(localLeader, uid, _, radius, distance) =>
+    processId => { case LeaderProcessInput(localLeader, uid, _, radius, distanceFunction) =>
       branch(processId == uid && uid != localLeader) {
         // started the process, but I am not the leader anymore, so I suppress that process
         (Terminated, Double.PositiveInfinity)
       } {
-        val distanceFromLeader = distance(processId == uid) // distance from the leader
+        val distanceFromLeader = distanceFunction(processId == uid) // distance from the leader
         val inBubble = distanceFromLeader <= radius // check if this zone is inside the bubble
         (mux(inBubble)(Output)(External), distanceFromLeader)
       }
