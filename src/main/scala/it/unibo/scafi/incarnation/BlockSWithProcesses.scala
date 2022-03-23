@@ -21,7 +21,7 @@ trait BlockSWithProcesses {
     * @param distanceFromLeader
     *   the distance (using a certain metric)
     */
-  case class LeaderProcessOutput[S](symmetryBreaker: S, distanceFromLeader: Double)
+  case class LeaderProcessOutput[S](symmetryBreaker: S, distanceFromLeader: Double, sender: ID)
 
   /** @param localLeader
     *   the current leader field produce by processes
@@ -40,7 +40,7 @@ trait BlockSWithProcesses {
       breaker: S,
       radius: Double,
       distanceFunction: Distance,
-      distanceFromLeader: Double
+      feedback: LeaderProcessOutput[S]
   )
 
   /** This function produces a field of id resulted from a distributed leader election process.
@@ -60,17 +60,16 @@ trait BlockSWithProcesses {
       radius: Double,
       distanceFunction: Distance = distanceTo(_, nbrRange)
   ): ID = {
-    val default = id -> LeaderProcessOutput[S](symmetryBreaker, 0.0)
+    val default = id -> LeaderProcessOutput[S](symmetryBreaker, 0.0, mid())
     rep(default) { case (leadId, leadOutput) =>
       val candidate = id == leadId
       // compute the leaders using processes, in jointing point multiple leader could exists
       val leaders: Map[ID, LeaderProcessOutput[S]] = sspawn2[ID, LeaderProcessInput[S], LeaderProcessOutput[S]](
         processDefinition,
         mux(candidate)(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
-        LeaderProcessInput(leadId, id, symmetryBreaker, radius, distanceFunction, leadOutput.distanceFromLeader)
+        LeaderProcessInput(leadId, id, symmetryBreaker, radius, distanceFunction, leadOutput)
       )
-      node.put("leaders", leaders)
-      val closeEnough = leaders.filter { case (_, LeaderProcessOutput(_, distance)) => distance < radius }
+      val closeEnough = leaders.filter { case (_, LeaderProcessOutput(_, distance, _)) => distance < radius }
       node.put("close-enough", closeEnough)
       // choose the leader using the breaking symmetry value
       selectLeader(leaders + default).getOrElse(default)
@@ -80,8 +79,8 @@ trait BlockSWithProcesses {
   private def processDefinition[S: Bounded]: ID => LeaderProcessInput[S] => POut[LeaderProcessOutput[S]] = id =>
     input => {
       val (status, gradient) = insideBubble(id)(input) // I check this zone is inside the bubble when id is the leader
-      optBranch(status == Terminated || status == External) { // if I am external or the process is terminated, return a default field
-        POut(LeaderProcessOutput(implicitly[Bounded[S]].bottom, Double.PositiveInfinity), status)
+      optimizedBranch(status == Terminated || status == External) { // if I am external or the process is terminated, return a default field
+        POut(LeaderProcessOutput(implicitly[Bounded[S]].bottom, Double.PositiveInfinity, Bounded.of_i.bottom), status)
       } {
         POut(
           expandBubble(bounded[S])(gradient)(id)(input),
@@ -91,31 +90,19 @@ trait BlockSWithProcesses {
     }
 
   private def insideBubble[S]: ID => LeaderProcessInput[S] => (Status, Double) =
-    processId => { case LeaderProcessInput(localLeader, uid, _, radius, distanceFunction, localDistanceLeader) =>
+    processId => { case LeaderProcessInput(localLeader, uid, _, radius, distanceFunction, output) =>
       val distanceFromLeader = distanceFunction(processId == uid) // distance from the leader
-      optBranch(processId == uid && uid != localLeader) {
+      optimizedBranch(processId == uid && uid != localLeader) {
         // started the process, but I am not the leader anymore, so I suppress that process
         (Terminated, Double.PositiveInfinity)
       } {
 
         val inBubble = distanceFromLeader <= radius // check if this zone is inside the bubble
         // check if any node near to me have this zone activate
-        val anyNodeInBubble = includingSelf.anyHood(nbr(localLeader) == processId)
-
-        /** edge condition: happens when a node is between two zones:
-          *
-          * a -- x -- a
-          *
-          * x should be external to the a bubble.
-          */
-        val minLeader = excludingSelf.minHoodSelector(nbr(distanceFromLeader))(nbr(localLeader))
-        val maxLeader = excludingSelf.maxHoodSelector(nbr(distanceFromLeader))(nbr(localLeader))
-        val neighboursCount = excludingSelf.sumHood(1)
-        val edgeCondition =
-          minLeader == maxLeader && neighboursCount > 1 && localLeader != processId && localDistanceLeader != 0.0
+        val senderLeader = excludingSelf.reifyField(nbr(localLeader)).getOrElse(output.sender, processId)
         val status =
-          mux(inBubble && anyNodeInBubble) {
-            mux(edgeCondition)(External)(Output)
+          mux(inBubble) {
+            mux(senderLeader != processId)(External)(Output)
           }(External)
         (status, distanceFromLeader)
       }
@@ -125,30 +112,30 @@ trait BlockSWithProcesses {
     gradient =>
       processId => { case LeaderProcessInput(_, uid, breaker, _, _, _) =>
         val source = processId == uid
+        val sender = includingSelf.minHoodSelector(nbr(gradient))(nbr(uid))
         // broadcast the breaker of this leader in the entire zone where
-        LeaderProcessOutput(broadcastAlong(source, gradient, breaker), gradient)
+        LeaderProcessOutput(broadcastAlong(source, gradient, breaker), gradient, sender)
       }
 
   // select the leader using the symmetric breaker
   private def selectLeader[S: Bounded](
       leaders: Map[ID, LeaderProcessOutput[S]]
   ): Option[(ID, LeaderProcessOutput[S])] = {
-    leaders.reduceOption[(ID, LeaderProcessOutput[S])] {
-      case (leaderA @ (idA, LeaderProcessOutput(breakerA, _)), leaderB @ (idB, LeaderProcessOutput(breakerB, _))) =>
-        if ((breakerA, idA) > (breakerB, idB)) {
-          leaderA
-        } else {
-          leaderB
-        }
+    leaders.reduceOption[(ID, LeaderProcessOutput[S])] { case (leaderA @ (idA, outputA), leaderB @ (idB, outputB)) =>
+      if ((outputA.symmetryBreaker, idA) > (outputB.symmetryBreaker, idB)) {
+        leaderA
+      } else {
+        leaderB
+      }
     }
   }
 
   def broadcastAlong[D: Bounded](source: Boolean, g: Double, data: D): D = {
-    share(data) { case (_, nbrField) =>
-      mux(source)(data)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbrField()))
+    share(data) { case (_, neighboursData) =>
+      mux(source)(data)(includingSelf.minHoodSelector[Double, D](nbr(g))(neighboursData()))
     }
   }
 
-  def optBranch[A](cond: Boolean)(th: A)(el: A): A =
-    align(vm.index)(_ => align(cond)(mux(_)(th)(el)))
+  def optimizedBranch[A](condition: Boolean)(whenTrue: A)(whenFalse: A): A =
+    align(vm.index)(_ => align(condition)(mux(_)(whenTrue)(whenFalse)))
 }
