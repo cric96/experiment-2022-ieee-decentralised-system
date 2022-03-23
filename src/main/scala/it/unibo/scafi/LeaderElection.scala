@@ -12,8 +12,6 @@ class LeaderElection
     with BlockSWithProcesses {
   private val rainGaugeTrace = SensorTrace
   private lazy val grain = node.get[Double]("grain")
-  private lazy val waterLevelWeight = node.get[Double]("waterLevelWeight")
-  private lazy val adjustLevel = 1000
   override def main(): Any = {
     val waterLevel = perceiveWaterLevel()
     val altitude = altitudeLevel()
