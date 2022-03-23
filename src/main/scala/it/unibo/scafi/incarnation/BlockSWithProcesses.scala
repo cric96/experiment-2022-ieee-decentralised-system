@@ -11,9 +11,6 @@ trait BlockSWithProcesses {
   // Conversions
   implicit def boundedToOrdering[A: Bounded]: Ordering[A] = (x: A, y: A) => implicitly[Bounded[A]].compare(x, y)
   def bounded[A: Bounded]: Bounded[A] = implicitly[Bounded[A]]
-  // Types
-  type Distance =
-    Boolean => Double // or in general, it could be type Distance[D: Numeric] = Boolean => D, or another type context
   // Data
   /** Represent data produced by a single aggregate process
     * @param symmetryBreaker
@@ -58,7 +55,7 @@ trait BlockSWithProcesses {
       id: ID = mid(),
       symmetryBreaker: S,
       radius: Double,
-      distanceFunction: Distance = distanceTo(_, nbrRange)
+      distanceFunction: Distance = Distance(nbrRange, (metric, source) => distanceTo(source, metric))
   ): ID = {
     val default = id -> LeaderProcessOutput[S](symmetryBreaker, 0.0)
     rep(default) { case (leadId, leadOutput) =>
@@ -97,7 +94,6 @@ trait BlockSWithProcesses {
         // started the process, but I am not the leader anymore, so I suppress that process
         (Terminated, Double.PositiveInfinity)
       } {
-
         val inBubble = distanceFromLeader <= radius // check if this zone is inside the bubble
         // check if any node near to me have this zone activate
         val anyNodeInBubble = includingSelf.anyHood(nbr(localLeader) == processId)
@@ -108,8 +104,10 @@ trait BlockSWithProcesses {
           *
           * x should be external to the a bubble.
           */
-        val minLeader = excludingSelf.minHoodSelector(nbr(distanceFromLeader))(nbr(localLeader))
-        val maxLeader = excludingSelf.maxHoodSelector(nbr(distanceFromLeader))(nbr(localLeader))
+        val minLeader =
+          includingSelf.minHoodSelector(nbr(distanceFromLeader) + distanceFunction.metric())(nbr(localLeader))
+        val maxLeader =
+          includingSelf.maxHoodSelector(nbr(distanceFromLeader) + distanceFunction.metric())(nbr(localLeader))
         val neighboursCount = excludingSelf.sumHood(1)
         val edgeCondition =
           minLeader == maxLeader && neighboursCount > 1 && localLeader != processId && localDistanceLeader != 0.0
@@ -117,16 +115,16 @@ trait BlockSWithProcesses {
           mux(inBubble && anyNodeInBubble) {
             mux(edgeCondition)(External)(Output)
           }(External)
-        (status, distanceFromLeader)
+        (status, mux(status == External)(Double.PositiveInfinity)(distanceFromLeader))
       }
     }
 
   private def expandBubble[S: Bounded]: Double => ID => LeaderProcessInput[S] => LeaderProcessOutput[S] =
     gradient =>
-      processId => { case LeaderProcessInput(_, uid, breaker, _, _, _) =>
+      processId => { case LeaderProcessInput(_, uid, breaker, _, distanceFunction, _) =>
         val source = processId == uid
         // broadcast the breaker of this leader in the entire zone where
-        LeaderProcessOutput(broadcastAlong(source, gradient, breaker), gradient)
+        LeaderProcessOutput(broadcastAlong(source, gradient, breaker, distanceFunction.metric), gradient)
       }
 
   // select the leader using the symmetric breaker
@@ -143,9 +141,9 @@ trait BlockSWithProcesses {
     }
   }
 
-  def broadcastAlong[D: Bounded](source: Boolean, g: Double, data: D): D = {
-    share(data) { case (_, nbrField) =>
-      mux(source)(data)(includingSelf.minHoodSelector[Double, D](nbr(g))(nbrField()))
+  def broadcastAlong[D: Bounded](source: Boolean, g: Double, data: D, metric: Metric): D = {
+    share(data) { case (l, nbrField) =>
+      mux(source)(data)(excludingSelf.minHoodSelector[Double, D](nbr(g) + metric())(nbrField()).getOrElse(l))
     }
   }
 
