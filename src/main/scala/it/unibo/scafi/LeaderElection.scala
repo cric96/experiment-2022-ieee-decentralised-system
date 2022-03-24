@@ -9,6 +9,7 @@ class LeaderElection
     with CustomSpawn
     with ProcessFix
     with BlockG
+    with BlockC
     with BlockSWithProcesses {
   private val rainGaugeTrace = SensorTrace
   private lazy val grain = node.get[Double]("grain")
