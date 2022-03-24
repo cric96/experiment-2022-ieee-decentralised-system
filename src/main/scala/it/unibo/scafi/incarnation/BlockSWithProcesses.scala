@@ -80,10 +80,8 @@ trait BlockSWithProcesses {
       optBranch(status == Terminated || status == External) { // if I am external or the process is terminated, return a default field
         POut(LeaderProcessOutput(implicitly[Bounded[S]].bottom, Double.PositiveInfinity), status)
       } {
-        POut(
-          expandBubble(bounded[S])(gradient)(id)(input),
-          Output
-        ) // Otherwise, I continue to expand the bubble in this zone
+        // Otherwise, I continue to expand the bubble in this zone
+        POut(expandBubble(bounded[S])(gradient)(id)(input), status)
       }
     }
 
@@ -94,28 +92,14 @@ trait BlockSWithProcesses {
         // started the process, but I am not the leader anymore, so I suppress that process
         (Terminated, Double.PositiveInfinity)
       } {
+        val isEdge = detectedEdge(distanceFromLeader, processId, uid, distanceFunction.metric, localLeader)
         val inBubble = distanceFromLeader <= radius // check if this zone is inside the bubble
         // check if any node near to me have this zone activate
-        val anyNodeInBubble = includingSelf.anyHood(nbr(localLeader) == processId)
-
-        /** edge condition: happens when a node is between two zones:
-          *
-          * a -- x -- a
-          *
-          * x should be external to the a bubble.
-          */
-        val minLeader =
-          includingSelf.minHoodSelector(nbr(distanceFromLeader) + distanceFunction.metric())(nbr(localLeader))
-        val maxLeader =
-          includingSelf.maxHoodSelector(nbr(distanceFromLeader) + distanceFunction.metric())(nbr(localLeader))
-        val neighboursCount = excludingSelf.sumHood(1)
-        val edgeCondition =
-          minLeader == maxLeader && neighboursCount > 1 && localLeader != processId && localDistanceLeader != 0.0
         val status =
-          mux(inBubble && anyNodeInBubble) {
-            mux(edgeCondition)(External)(Output)
-          }(External)
-        (status, mux(status == External)(Double.PositiveInfinity)(distanceFromLeader))
+          mux(inBubble && !isEdge)(Output)(External)
+        node.put(s"distance-$processId", distanceFromLeader)
+        node.put(s"status-$processId", status)
+        (status, distanceFromLeader)
       }
     }
 
@@ -149,4 +133,31 @@ trait BlockSWithProcesses {
 
   def optBranch[A](cond: Boolean)(th: A)(el: A): A =
     align(vm.index)(_ => align(cond)(mux(_)(th)(el)))
+
+  def detectedEdge(distanceFromLeader: Double, processId: ID, uid: ID, metric: Metric, localLeader: ID): Boolean = {
+    val leaderHop = share(0) { case (difference, nbrDifferences) =>
+      mux(processId == uid)(0) {
+        val distanceField = excludingSelf
+          .reifyField(nbr(distanceFromLeader + metric()))
+        val parents = distanceField
+          .filter(_._2 <= distanceFromLeader)
+          .keys
+          .toSet
+        val differenceField = excludingSelf
+          .reifyField(nbrDifferences())
+        val (parent, parentDifferences) = differenceField
+          .filter { case (id, _) => parents.contains(id) }
+          .minByOption(_._2)
+          .getOrElse((uid, difference))
+        node.put(s"parent-$processId", parent)
+        val directConnectedWithArea = differenceField.exists(_._2 == 0)
+        val parentLeader = includingSelf.reifyField(nbr(localLeader))(parent)
+        mux(parentLeader != localLeader || parentLeader != processId)(
+          mux(directConnectedWithArea)(1)(parentDifferences + 1)
+        )(parentDifferences)
+      }
+    }
+    node.put(s"edge-$processId", leaderHop)
+    leaderHop > 1
+  }
 }
