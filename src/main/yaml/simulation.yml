@@ -4,6 +4,11 @@ environment:
   parameters: ["toronto.pbf", false]
 
 variables:
+  seed: &random
+    min: 0
+    max: 0
+    step: 1
+    default: 0
   real_devices: &real-devices
     formula: 50
   fire_stations:
@@ -42,6 +47,9 @@ _fire: &fire [
   [43.8154104,-79.4738316]
 ]
 
+seeds:
+  scenario: *random
+  simulation: *random
 network-model:
   type: ClosestN
   parameters: [5, *total-nodes]
@@ -84,3 +92,55 @@ deployments:
     programs: *program
     contents:
       shared: *shared
+
+export:
+  - type: CSVExporter
+    parameters:
+      fileNameRoot: "coord"
+      exportPath: "data"
+      interval: 1
+    data:
+      - time
+      - molecule: station-busy
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: solve
+        value-filter: onlyfinite
+        aggregators: [ max ]
+      - molecule: water-level
+        value-filter: onlyfinite
+        aggregators: [ mean ]
+      - molecule: danger-1
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-2
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-3
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-4
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-5
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-6
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-7
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-8
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-9
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+      - molecule: danger-10
+        value-filter: onlyfinite
+        aggregators: [ sum ]
+
+terminate:
+  - type: AfterTime
+    parameters: 4000

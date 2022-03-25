@@ -10,7 +10,7 @@ tmp_folder = "./tmp/"
 target_folder = "./src/main/resources/toronto/"
 toronto_data = "./toronto.csv"
 toronto_reduced_data = "./src/main/resources/toronto.csv"
-startingSeconds = 21575000 + 4500 - 600
+startingSeconds = 21575000 + 2500 - 300
 endingSeconds = 21620000
 precision = 5
 ## remove prev folder
