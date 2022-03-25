@@ -66,9 +66,9 @@ trait BlockSWithProcesses {
         mux(candidate)(Set(id))(Set.empty), // a process is spawn only if I am the local candidate
         LeaderProcessInput(leadId, id, symmetryBreaker, radius, distanceFunction, leadOutput.distanceFromLeader)
       )
-      node.put("leaders", leaders)
+      // node.put("leaders", leaders)
       val closeEnough = leaders.filter { case (_, LeaderProcessOutput(_, distance)) => distance < radius }
-      node.put("close-enough", closeEnough)
+      // node.put("close-enough", closeEnough)
       // choose the leader using the breaking symmetry value
       selectLeader(leaders + default).getOrElse(default)
     }._1
@@ -97,8 +97,8 @@ trait BlockSWithProcesses {
         // check if any node near to me have this zone activate
         val status =
           mux(inBubble && !isEdge)(Output)(External)
-        node.put(s"distance-$processId", distanceFromLeader)
-        node.put(s"status-$processId", status)
+        // node.put(s"distance-$processId", distanceFromLeader)
+        // node.put(s"status-$processId", status)
         (status, distanceFromLeader)
       }
     }
@@ -134,30 +134,43 @@ trait BlockSWithProcesses {
   def optBranch[A](cond: Boolean)(th: A)(el: A): A =
     align(vm.index)(_ => align(cond)(mux(_)(th)(el)))
 
-  def detectedEdge(distanceFromLeader: Double, processId: ID, uid: ID, metric: Metric, localLeader: ID): Boolean = {
-    val leaderHop = share(0) { case (difference, nbrDifferences) =>
+  // TODO simplify this method.
+  private def detectedEdge(
+      distanceFromLeader: Double,
+      processId: ID,
+      uid: ID,
+      metric: Metric,
+      localLeader: ID
+  ): Boolean = {
+    val leaderHop = share(0) { case (difference, nbrLeaderHop) =>
       mux(processId == uid)(0) {
         val distanceField = excludingSelf
           .reifyField(nbr(distanceFromLeader + metric()))
-        val parents = distanceField
-          .filter(_._2 <= distanceFromLeader)
-          .keys
-          .toSet
-        val differenceField = excludingSelf
-          .reifyField(nbrDifferences())
-        val (parent, parentDifferences) = differenceField
+        val parents = distanceField.filter(_._2 <= distanceFromLeader).keys.toSet
+        val children = distanceField.filter(_._2 > distanceFromLeader).keys.toSet
+        val differenceFieldParent = excludingSelf
+          .reifyField(nbrLeaderHop())
           .filter { case (id, _) => parents.contains(id) }
+        val leaderParentField = includingSelf
+          .reifyField(nbr(localLeader))
+          .filter { case (id, _) => parents.contains(id) }
+        val (parent, parentDifferences) = differenceFieldParent
           .minByOption(_._2)
           .getOrElse((uid, difference))
-        node.put(s"parent-$processId", parent)
-        val directConnectedWithArea = differenceField.exists(_._2 == 0)
-        val parentLeader = includingSelf.reifyField(nbr(localLeader))(parent)
+        val leaderChildrenField = includingSelf
+          .reifyField((nbrLeaderHop(), nbr(localLeader)))
+          .filter { case (id, _) => children.contains(id) }
+        // node.put(s"parent-$processId", parent)
+        val directConnectedWithArea = leaderParentField.exists(_._2 == processId)
+        val anyAfterMeDirectConnected =
+          leaderChildrenField.values.exists(node => localLeader == node._2 && node._1 == 0)
+        val parentLeader = leaderParentField.getOrElse(parent, processId)
         mux(parentLeader != localLeader || parentLeader != processId)(
-          mux(directConnectedWithArea)(1)(parentDifferences + 1)
+          mux(directConnectedWithArea || anyAfterMeDirectConnected)(1)(parentDifferences + 1)
         )(parentDifferences)
       }
     }
-    node.put(s"edge-$processId", leaderHop)
+    // node.put(s"edge-$processId", leaderHop)
     leaderHop > 1
   }
 }
