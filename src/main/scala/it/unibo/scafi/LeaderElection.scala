@@ -18,7 +18,7 @@ class LeaderElection
     with BlocksWithGC
     with BlockSWithProcesses {
   import SpawnInterface._
-  private val dangerLevel = 0.8
+  private val dangerLevel = 1
   private val maxExportDanger = 10
   private val rainGaugeTrace = SensorTrace
   private lazy val grain = node.get[Double]("grain")
@@ -69,7 +69,12 @@ class LeaderElection
     val isInDanger = dangerSignal(waterArea, waterLevel)
     val actionNeeded = propagateDangerZone(altitudeArea, isInDanger.exists(_._2))
     val busy = mux(isFireStation && actionNeeded.size > 1)(1)(0)
+    val stationChoice = rep(Option.empty[(ID, Double)]) {
+      case some @ Some(elem) if (actionNeeded.exists(_._1 == elem._1)) => some
+      case _ => actionNeeded.minByOption(_._2)
+    }
     node.put("danger-map", isInDanger)
+    node.put("id", mid())
     node.put("action-needed", actionNeeded)
     node.put("water-level", waterLevel)
     node.put("altitude", altitude)
@@ -78,7 +83,7 @@ class LeaderElection
     node.put("water-level-area", waterArea)
     node.put("station-received", mux(isFireStation)(isInDanger.size)(0))
     node.put("station-busy", busy)
-    node.put("solve", mux(isFireStation)(actionNeeded.minByOption(_._2).map(_._1).getOrElse(0))(0))
+    node.put("solve", mux(isFireStation)(stationChoice.map(_._2).getOrElse(Double.NaN))(Double.NaN))
     dangerExport(actionNeeded)
     waterArea
   }
@@ -98,23 +103,29 @@ class LeaderElection
     leader =>
       _ => {
         val leaderZone = leader == waterArea
+        val source = leader == mid
         val status = mux(!leaderZone) {
           // I am not in this area
-          mux(leader == mid) {
+          mux(source) {
             // I was the leader but I changed the area, this process is finished
             Terminated
           } {
-            // I am external to this areaempty
+            // I am external to this area
             External
           }
         }(Output)
         val potential = fastGradient(nbrRange, mid == leader)
         val count = C[Double, Int](potential, _ + _, 1, 0)
         val waterLevelArea = C[Double, Double](potential, _ + _, waterLevel, 0.0)
-        node.put("water-level-average", waterLevelArea)
-        POut(leader == mid && waterLevelArea / count > dangerLevel && count > 1, status)
+        val averageWaterLevel = waterLevelArea / count
+        node.put("water-level-average", broadcast(source, averageWaterLevel))
+        node.put("potential-danger", potential)
+        POut(
+          broadcast(source, source && averageWaterLevel > dangerLevel && count > 1),
+          status
+        )
       },
-    Set(waterArea),
+    mux(mid() == waterArea)(Set(waterArea))(Set.empty),
     waterLevel
   )
 
@@ -122,10 +133,11 @@ class LeaderElection
     sspawn2[ID, Unit, Double](
       leader =>
         _ => {
-          val status = mux(altitudeZone == leader && !danger) {
+          val source = leader == mid()
+          val status = mux(source && !danger) {
             Terminated
           }(Output)
-          POut(fastGradient(nbrRange, altitudeZone == leader), status)
+          POut(fastGradient(nbrRange, source), status)
         },
       mux(altitudeZone == mid() && danger)(Set(mid()))(Set.empty[ID]),
       ()

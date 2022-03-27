@@ -6,7 +6,7 @@ environment:
 variables:
   seed: &random
     min: 0
-    max: 0
+    max: 30
     step: 1
     default: 0
   real_devices: &real-devices
@@ -103,10 +103,10 @@ export:
       - time
       - molecule: station-busy
         value-filter: onlyfinite
-        aggregators: [ sum ]
+        aggregators: [ sum, max ]
       - molecule: solve
         value-filter: onlyfinite
-        aggregators: [ max ]
+        aggregators: [ mean ]
       - molecule: water-level
         value-filter: onlyfinite
         aggregators: [ mean ]
@@ -143,4 +143,4 @@ export:
 
 terminate:
   - type: AfterTime
-    parameters: 4000
+    parameters: 42800
