@@ -83,7 +83,9 @@ class LeaderElection
     node.put("water-level-area", waterArea)
     node.put("station-received", mux(isFireStation)(isInDanger.size)(0))
     node.put("station-busy", busy)
+    node.put("total-danger", mux(actionNeeded.keySet.contains(mid()))(1)(0))
     node.put("solve", mux(isFireStation)(stationChoice.map(_._2).getOrElse(Double.NaN))(Double.NaN))
+    node.put("solve-id", mux(isFireStation)(stationChoice.map(_._1).getOrElse(-1))(-1))
     dangerExport(actionNeeded)
     waterArea
   }
@@ -120,8 +122,9 @@ class LeaderElection
         val averageWaterLevel = waterLevelArea / count
         node.put("water-level-average", broadcast(source, averageWaterLevel))
         node.put("potential-danger", potential)
+        val isInDanger = source && averageWaterLevel > dangerLevel && count > 1
         POut(
-          broadcast(source, source && averageWaterLevel > dangerLevel && count > 1),
+          broadcast(source, isInDanger),
           status
         )
       },
@@ -134,10 +137,9 @@ class LeaderElection
       leader =>
         _ => {
           val source = leader == mid()
-          val status = mux(source && !danger) {
-            Terminated
-          }(Output)
-          POut(fastGradient(nbrRange, source), status)
+          val distance = fastGradient(nbrRange, source)
+          val status = mux(source && !danger)(Terminated)(mux(distance < grain)(Output)(External))
+          POut(distance, status)
         },
       mux(altitudeZone == mid() && danger)(Set(mid()))(Set.empty[ID]),
       ()
