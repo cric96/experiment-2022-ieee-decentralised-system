@@ -73,7 +73,7 @@ trait BlockSWithProcesses {
       selectLeader(leaders + default).getOrElse(default)
     }._1
   }
-
+  Predef
   private def processDefinition[S: Bounded]: ID => LeaderProcessInput[S] => POut[LeaderProcessOutput[S]] = id =>
     input => {
       val (status, gradient) = insideBubble(id)(input) // I check this zone is inside the bubble when id is the leader
@@ -143,29 +143,38 @@ trait BlockSWithProcesses {
       localLeader: ID
   ): Boolean = {
     val leaderHop = share(0) { case (difference, nbrLeaderHop) =>
-      mux(processId == uid)(0) {
-        val distanceField = excludingSelf
+      mux(processId == uid)(0) { // the leader share the edge from them, 0 in the source zone
+        val distanceField = excludingSelf // the neighbourhood field of distances
           .reifyField(nbr(distanceFromLeader + metric()))
+        // the node collected before me
         val parents = distanceField.filter(_._2 <= distanceFromLeader).keys.toSet
+        // node after me
         val children = distanceField.filter(_._2 > distanceFromLeader).keys.toSet
+        // the distances of node collocated before me
         val differenceFieldParent = excludingSelf
           .reifyField(nbrLeaderHop())
           .filter { case (id, _) => parents.contains(id) }
+        // the local leader of the nodes before me
         val leaderParentField = includingSelf
           .reifyField(nbr(localLeader))
           .filter { case (id, _) => parents.contains(id) }
+        // get the nearest node
         val (parent, parentDifferences) = differenceFieldParent
           .minByOption(_._2)
           .getOrElse((uid, difference))
+        // get the field of local leader of the children nodes
         val leaderChildrenField = includingSelf
           .reifyField((nbrLeaderHop(), nbr(localLeader)))
           .filter { case (id, _) => children.contains(id) }
         // node.put(s"parent-$processId", parent)
+        // Some parent is direct connected with a leader?
         val directConnectedWithArea = leaderParentField.exists(_._2 == processId)
+        // Some children has the same leader of mine and it is direct connected with this area?
         val anyAfterMeDirectConnected =
           leaderChildrenField.values.exists(node => localLeader == node._2 && node._1 == 0)
         val parentLeader = leaderParentField.getOrElse(parent, processId)
         mux(parentLeader != localLeader || parentLeader != processId)(
+          // if I have a leader different from whom send me the local leader of the parentLeader has another processId, I put 1
           mux(directConnectedWithArea || anyAfterMeDirectConnected)(1)(parentDifferences + 1)
         )(parentDifferences)
       }
