@@ -11,13 +11,13 @@ import scala.util.{Failure, Success, Try}
 object SensorTrace {
   // Type definitions
   final private case class SensorData(geoPosition: Point3D, data: Double)
-  final private case class SpatioTemporalRecord(when: Double, data: Seq[SensorData])
+  final private case class SpatioTemporalRecord(timestamp: Double, data: Seq[SensorData])
   private type SpatioTemporalData = Seq[SpatioTemporalRecord]
   // Constant
   private lazy val rainGaugeData = normalise(loadFromSource(Source.fromResource("toronto.csv")))
   private lazy val adjustTimeFactor: Double = 1.0 // used to reduce the total simulation time, to understand how to use
-  def perceive(where: Point3D, at: Double): Double =
-    spatialSearch(where, temporalSearch(at, rainGaugeData))
+  def perceive(position: Point3D, timestap: Double): Double =
+    spatioTemporalSearch(timestap, position, rainGaugeData)
 
   // Utility
   private def loadFromSource(input: Source): SpatioTemporalData =
@@ -37,7 +37,7 @@ object SensorTrace {
       .groupMap { case (k, v) => k } { case (k, v) => v }
       .toVector
       .map { case (when, data) => SpatioTemporalRecord(when, data) }
-      .sortBy(_.when)
+      .sortBy(_.timestamp)
   }
 
   private def marshallData(elements: List[String]): Try[(Double, SensorData)] = elements match {
@@ -48,31 +48,42 @@ object SensorTrace {
   }
 
   private def normalise(rainGaugeData: SpatioTemporalData): SpatioTemporalData = {
-    val firstInstant = rainGaugeData.head.when
-    rainGaugeData.map(data => data.focus(_.when).modify(_ - firstInstant))
+    val firstInstant = rainGaugeData.head.timestamp
+    rainGaugeData.map(data => data.focus(_.timestamp).modify(_ - firstInstant))
   }
 
-  private def temporalSearch(when: Double, data: SpatioTemporalData): SpatioTemporalRecord = {
+  private def spatioTemporalSearch(when: Double, where: Point3D, data: SpatioTemporalData): Double = {
+    def spatialSearch(record: SpatioTemporalRecord): Double = {
+      record.data.sortBy(_.geoPosition.distance(where)) match {
+        case first :: second :: rest =>
+          val totalDistance = first.geoPosition.distance(where) + second.geoPosition.distance(where)
+          val ratio = first.geoPosition.distance(where) / totalDistance
+          ((1 - ratio) * first.data + ratio * second.data) / 2
+      }
+    }
     @tailrec
-    def binarySearch(boundLeft: Int, boundRight: Int): SpatioTemporalRecord = if (boundLeft > boundRight) { //
-      data.last
+    def binarySearch(boundLeft: Int, boundRight: Int): Double = if (boundLeft > boundRight) { //
+      spatialSearch(data.last)
     } else {
       val centerIndex = (boundLeft + boundRight) / 2
       val center = data(centerIndex)
-      if (center.when == when || (center.when < when && centerIndex < data.size && data(centerIndex + 1).when > when)) {
-        data(centerIndex)
-      } else if (center.when > when) {
+      if (center.timestamp == when) {
+        spatialSearch(data(centerIndex))
+      } else if (center.timestamp < when && centerIndex < data.size && data(centerIndex + 1).timestamp > when) { // in-between two data points
+        // weighted average
+        def timeOf(sample: Int) = data(sample).timestamp
+        def dataOf(sample: Int) = spatialSearch(data(sample))
+        val initialTime = timeOf(centerIndex)
+        val finalTime = timeOf(centerIndex + 1)
+        val timeSlice = finalTime - initialTime
+        val rightBias = (when - initialTime) / timeSlice
+        ((1 - rightBias) * dataOf(centerIndex) + rightBias * dataOf(centerIndex + 1))
+      } else if (center.timestamp > when) {
         binarySearch(boundLeft, centerIndex - 1)
       } else {
         binarySearch(centerIndex + 1, boundRight)
       }
     }
     binarySearch(0, data.size)
-  }
-
-  private def spatialSearch(where: Point3D, record: SpatioTemporalRecord): Double = {
-    record.data.sortBy(_.geoPosition.distance(where)) match {
-      case first :: second :: rest => (first.data + second.data) / 2
-    }
   }
 }

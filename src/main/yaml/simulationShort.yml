@@ -6,7 +6,7 @@ environment:
 variables:
   seed: &random
     min: 0
-    max: 30
+    max: 0
     step: 1
     default: 0
   real_devices: &real-devices
@@ -60,7 +60,7 @@ _shared: &shared
   - molecule: waterLevelWeight
     concentration: 0.2
 _program: &program
-  - time-distribution: 1
+  - time-distribution: 0.3
     type: Event
     actions:
       - type: RunScafiProgram
@@ -147,4 +147,4 @@ export:
 
 terminate:
   - type: AfterTime
-    parameters: 42800
+    parameters: 2000 #42800
