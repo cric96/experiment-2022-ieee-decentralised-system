@@ -3,10 +3,6 @@ import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import it.unibo.geo.altitude.AltitudeService
 import it.unibo.scafi.incarnation.{BlockSWithProcesses, Distance, ProcessFix}
 
-/** Idea: in un area c'era un possibile allerme. Vedo se c'è un punto critico (leader che è sotto una certa solgia)
-  * Questo, se riceve l'allarme, fa partire un processo che espande l'allerme ocn distanza e id di chi l'ha generato. Le
-  * stazioni poi, scelgono un id a cui associarsi La somma totale di allarmi deve tendere al numero totale di leader
-  */
 class LeaderElection
     extends AggregateProgram
     with StandardSensors
@@ -22,33 +18,7 @@ class LeaderElection
   private val maxExportDanger = 10
   private val rainGaugeTrace = SensorTrace
   private lazy val grain = node.get[Double]("grain")
-  // avverte tutti dentro 3 km di raggio
-  // fire station => bisogna allargarsi
-  // lanci un processo dal leader che trova la più vicina fire station
-  // trovi le tre centrali più vicine ==> trovate quelle più vicine (grain infinito), quelle più vicine.
-  // se sono il più vicino in assoluto alla centrale allerto solo quella.
-  // devo vedere gli altri che centrali ha trovato
-  // più di uno troverà la stessa => minimizzo la distanza media
-  // stazione mi espando al più vicino leader. propago l'allerme con la distanza e l'id del leader. se hai distanza identiche => id
-  // uno e una soltanto ==>
-  // conto i warning ricevuti
-  // exportare 10 variabile
-  // 10 warning (conto 1 se ho almeno n warning)
-  // distanza da chi processa il warning
-  // SE non le allochiamo uno e una soltano, contiamo
-  // numero di allarmi ricevuto per ogni stazione
-  // numero di massimo di cose che sto seguendo per stazione,
-  // piovtisà
-  // numero di allarmi totali
-  // numero di stazioni allertate
-  // totale delle stazioni che sta agendo
-  // numero di allert che ha ricevuto
-  // la media di allert ha ricevuto
-  // 33 simulazioni su iris
-  // seed che vanno da 33 a 99
-  // se hai più alert, dai più valore all'altezza
-  // in base all'altitudine, propagi il vero allert
-  //
+
   override def main(): Any = {
     val waterLevel = perceiveWaterLevel()
     val altitude = altitudeLevel()
