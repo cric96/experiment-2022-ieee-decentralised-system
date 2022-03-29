@@ -1,4 +1,3 @@
-import java.awt.GraphicsEnvironment
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.URL
@@ -7,7 +6,7 @@ plugins {
     application
     alias(libs.plugins.gitSemVer)
     alias(libs.plugins.kotlin.jvm)
-    //alias(libs.plugins.kotlin.qa)
+    // alias(libs.plugins.kotlin.qa)
     alias(libs.plugins.multiJvmTesting)
     alias(libs.plugins.taskTree)
     scala
