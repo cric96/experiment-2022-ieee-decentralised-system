@@ -14,6 +14,7 @@ class LeaderElection
     with BlocksWithGC
     with BlockSWithProcesses {
   import SpawnInterface._
+  private val unit: Unit = {}
   private val dangerLevel = 1
   private val maxExportDanger = 10
   private val rainGaugeTrace = SensorTrace
@@ -75,7 +76,7 @@ class LeaderElection
     leader =>
       _ => {
         val leaderZone = leader == waterArea
-        val source = leader == mid
+        val source = leader == mid()
         val status = mux(!leaderZone) {
           // I am not in this area
           mux(source) {
@@ -86,7 +87,7 @@ class LeaderElection
             External
           }
         }(Output)
-        val potential = fastGradient(nbrRange, mid == leader)
+        val potential = fastGradient(nbrRange, source)
         val count = C[Double, Int](potential, _ + _, 1, 0)
         val waterLevelArea = C[Double, Double](potential, _ + _, waterLevel, 0.0)
         val averageWaterLevel = waterLevelArea / count
@@ -99,7 +100,7 @@ class LeaderElection
         )
       },
     mux(mid() == waterArea)(Set(waterArea))(Set.empty),
-    waterLevel
+    unit
   )
 
   private def propagateDangerZone(altitudeZone: ID, danger: Boolean): Map[ID, Double] =
@@ -112,7 +113,7 @@ class LeaderElection
           POut(distance, status)
         },
       mux(altitudeZone == mid() && danger)(Set(mid()))(Set.empty[ID]),
-      ()
+      unit
     )
 
   private def dangerExport(dangers: Map[ID, Double]): Unit = {
