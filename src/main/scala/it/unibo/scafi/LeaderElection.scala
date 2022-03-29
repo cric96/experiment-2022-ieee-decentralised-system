@@ -15,10 +15,10 @@ class LeaderElection
     with BlockSWithProcesses {
   import SpawnInterface._
   private val unit: Unit = {}
-  private val dangerLevel = 1
   private val maxExportDanger = 10
   private val rainGaugeTrace = SensorTrace
   private lazy val grain = node.get[Double]("grain")
+  private lazy val dangerLevel = node.get[Double]("dangerThr")
 
   override def main(): Any = {
     val waterLevel = perceiveWaterLevel()
