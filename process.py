@@ -184,13 +184,13 @@ if __name__ == '__main__':
     # How to name the summary of the processed data
     pickleOutput = 'data_summary'
     # Experiment prefixes: one per experiment (root of the file name)
-    experiments = ['simulation']
+    experiments = ['coord']
     floatPrecision = '{: 0.3f}'
     # Number of time samples 
     timeSamples = 100
     # time management
     minTime = 0
-    maxTime = 50
+    maxTime = 4000#46000
     timeColumnName = 'time'
     logarithmicTime = False
     # One or more variables are considered random and "flattened"
@@ -228,17 +228,24 @@ if __name__ == '__main__':
         return 'MSE[' + x + ']'
     def cardinality(x):
         return r'\|' + x + r'\|'
-
+    (stations, busy_sum, busy_max, avg_distance, water_level, total_danger, danger1, danger2, danger3, danger4, danger5) = (
+        'station-handle', 'station-busy[sum]', 'station-busy[max]',
+        'solve[mean]', 'water-level[mean]', 'total-danger[sum]',
+        'danger-1[sum]','danger-2[sum]','danger-3[sum]',
+        'danger-4[sum]', 'danger-5[sum]',
+    )
     labels = {
-        'nodeCount': Measure(r'$n$', 'nodes'),
-        'harmonicCentrality[Mean]': Measure(f'${expected("H(x)")}$'),
-        'meanNeighbors': Measure(f'${expected(cardinality("N"))}$', 'nodes'),
-        'speed': Measure(r'$\|\vec{v}\|$', r'$m/s$'),
-        'msqer@harmonicCentrality[Max]': Measure(r'$\max{(' + mse(centrality_label) + ')}$'),
-        'msqer@harmonicCentrality[Min]': Measure(r'$\min{(' + mse(centrality_label) + ')}$'),
-        'msqer@harmonicCentrality[Mean]': Measure(f'${expected(mse(centrality_label))}$'),
-        'msqer@harmonicCentrality[StandardDeviation]': Measure(f'${stdev_of(mse(centrality_label))}$'),
-        'org:protelis:armonicCentralityHLL[Mean]': Measure(f'${expected(centrality_label)}$'),
+        stations: Measure(r'signal handled'),
+        busy_sum: Measure(r"stations in action"),
+        busy_max : Measure(r"signal handled by stations"),
+        avg_distance : Measure(r"distance from signal"),
+        water_level: Measure(r"water level", "mm"),
+        total_danger : Measure(r"nodes in danger", "nodes"),
+        danger1 : Measure(r"one signal", "nodes"),
+        danger2: Measure(r"two signals", "nodes"),
+        danger3: Measure(r"three signals", "nodes"),
+        danger4: Measure(r"four signals", "nodes"),
+        danger5: Measure(r"five signals", "nodes"),
     }
     def derivativeOrMeasure(variable_name):
         if variable_name.endswith('dt'):
@@ -246,6 +253,8 @@ if __name__ == '__main__':
         return Measure(variable_name)
     def label_for(variable_name):
         return labels.get(variable_name, derivativeOrMeasure(variable_name)).description()
+    def labels_for(*name):
+        return map(lambda x: label_for(x), name)
     def unit_for(variable_name):
         return str(labels.get(variable_name, derivativeOrMeasure(variable_name)))
     
@@ -261,6 +270,7 @@ if __name__ == '__main__':
         except:
             lastTimeProcessed = -1
         shouldRecompute = not os.path.exists(".skip_data_process") and newestFileTime != lastTimeProcessed
+        shouldRecompute = True
         if not shouldRecompute:
             try:
                 means = pickle.load(open(pickleOutput + '_mean', 'rb'))
@@ -274,7 +284,7 @@ if __name__ == '__main__':
             for experiment in experiments:
                 # Collect all files for the experiment of interest
                 import fnmatch
-                allfiles = filter(lambda file: fnmatch.fnmatch(file, experiment + '_*.txt'), os.listdir(directory))
+                allfiles = filter(lambda file: fnmatch.fnmatch(file, experiment + '_*.csv'), os.listdir(directory))
                 allfiles = [directory + '/' + name for name in allfiles]
                 allfiles.sort()
                 # From the file name, extract the independent variables
@@ -405,5 +415,27 @@ if __name__ == '__main__':
         current_experiment_means = means[experiment]
         current_experiment_errors = stdevs[experiment]
         generate_all_charts(current_experiment_means, current_experiment_errors, basedir = f'{experiment}/all')
+        means_pd = current_experiment_means.to_dataframe().rename(columns=lambda x: label_for(x))
+        current_experiment_errors = stdevs[experiment].to_dataframe().rename(columns=lambda x: label_for(x))
+        means_pd = means_pd.fillna(0)
+        Path(f'{output_directory}').mkdir(parents=True, exist_ok=True)
         
+        ax = means_pd[labels_for(total_danger, stations)].plot().set_ylabel(unit_for(total_danger))
+        ax = means_pd[label_for(water_level)].plot(secondary_y = True, lw=3, color="k", alpha=0.5)
+        ax.set_ylabel(unit_for(water_level))
+        ax.figure.savefig(f'{output_directory}/danger-and-managed.pdf')
+        plt.close(ax.figure)
+        
+        means_pd[labels_for(danger1, danger2, danger3, danger4, danger5)].plot().set_ylabel(unit_for(total_danger))
+        ax = means_pd[label_for(water_level)].plot(secondary_y = True, lw=3, color="k", alpha=0.5)
+        ax.set_ylabel(unit_for(water_level))
+        ax.figure.savefig(f'{output_directory}/danger-evolution.pdf')
+        plt.close(ax.figure)
+        
+        means_pd[label_for(avg_distance)].plot().set_ylabel(unit_for(total_danger))
+        ax = means_pd[label_for(water_level)].plot(secondary_y = True, lw=3, color="k", alpha=0.5)
+        ax.set_ylabel(unit_for(water_level))
+        ax.figure.savefig(f'{output_directory}/average-distance.pdf')
+        
+
 # Custom charting

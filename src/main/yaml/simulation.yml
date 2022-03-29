@@ -6,7 +6,7 @@ environment:
 variables:
   seed: &random
     min: 0
-    max: 30
+    max: 63
     step: 1
     default: 0
   real_devices: &real-devices
@@ -57,10 +57,10 @@ network-model:
 _shared: &shared
   - molecule: grain
     concentration: *grain
-  - molecule: waterLevelWeight
-    concentration: 0.2
+  - molecule: dangerThr
+    concentration: 0.6
 _program: &program
-  - time-distribution: 1
+  - time-distribution: 0.3
     type: Event
     actions:
       - type: RunScafiProgram
