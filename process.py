@@ -420,7 +420,7 @@ if __name__ == '__main__':
         current_experiment_errors = stdevs[experiment].to_dataframe().rename(columns=lambda x: label_for(x))
         means_pd = means_pd.fillna(0)
         Path(f'{output_directory}').mkdir(parents=True, exist_ok=True)
-
+        colormap = "prism"
         def ax_water_level():
             ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", legend="water level")
             ax.set_ylabel(unit_for(water_level))
@@ -432,19 +432,19 @@ if __name__ == '__main__':
             fig.savefig(f'{output_directory}/{name}.pdf')
             plt.close(fig)
 
-        means_pd[labels_for(total_danger, stations)].plot(colormap='viridis').set_ylabel(unit_for(total_danger))
+        means_pd[labels_for(total_danger, stations)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
         finalise_fig(ax_water_level(), "danger-and-managed")
 
         styles = ['x--','o--','*--', 'd--']
         means_pd[labels_for(danger1, danger2, danger3, danger4)]\
-            .plot(style=styles, ms=2, lw=1, colormap='viridis').set_ylabel(unit_for(total_danger))
+            .plot(style=styles, ms=2, lw=1, colormap=colormap).set_ylabel(unit_for(total_danger))
         finalise_fig(ax_water_level(), "danger-evolution")
 
-        means_pd[label_for(avg_distance)].plot(colormap='viridis').set_ylabel(unit_for(total_danger))
+        means_pd[label_for(avg_distance)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
         ax = ax_water_level()
         finalise_fig(ax_water_level(), "average-distance")
 
-        means_pd[label_for(busy_max)].plot(colormap='viridis').set_ylabel(unit_for(total_danger))
+        means_pd[label_for(busy_max)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
         ax = ax_water_level()
         finalise_fig(ax_water_level(), "max-danger-for-station")
 # Custom charting
