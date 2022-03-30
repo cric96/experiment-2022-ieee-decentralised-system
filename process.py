@@ -185,7 +185,7 @@ if __name__ == '__main__':
     # How to name the summary of the processed data
     pickleOutput = 'data_summary'
     # Experiment prefixes: one per experiment (root of the file name)
-    experiments = ['coord']
+    experiments = ['simulation']
     floatPrecision = '{: 0.3f}'
     # Number of time samples 
     timeSamples = 100
@@ -420,7 +420,7 @@ if __name__ == '__main__':
         current_experiment_errors = stdevs[experiment].to_dataframe().rename(columns=lambda x: label_for(x))
         means_pd = means_pd.fillna(0)
         Path(f'{output_directory}').mkdir(parents=True, exist_ok=True)
-        colormap = "prism"
+        colormap = "winter"
         def ax_water_level():
             ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", legend="water level")
             ax.set_ylabel(unit_for(water_level))
