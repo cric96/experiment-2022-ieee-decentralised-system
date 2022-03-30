@@ -191,7 +191,7 @@ if __name__ == '__main__':
     timeSamples = 100
     # time management
     minTime = 0
-    maxTime = 42800#46000
+    maxTime = 36000#46000
     timeColumnName = 'time'
     logarithmicTime = False
     # One or more variables are considered random and "flattened"
@@ -236,12 +236,12 @@ if __name__ == '__main__':
         'danger-4[sum]', 'danger-5[sum]',
     )
     labels = {
-        stations: Measure(r'signal handled'),
+        stations: Measure(r'allocated operators'),
         busy_sum: Measure(r"stations in action"),
         busy_max : Measure(r"signal handled by stations"),
         avg_distance : Measure(r"distance from signal"),
         water_level: Measure(r"water level", "mm"),
-        total_danger : Measure(r"nodes in danger", "nodes"),
+        total_danger : Measure(r"nodes warned", "nodes"),
         danger1 : Measure(r"one signal", "nodes"),
         danger2: Measure(r"two signals", "nodes"),
         danger3: Measure(r"three signals", "nodes"),
@@ -422,28 +422,29 @@ if __name__ == '__main__':
         Path(f'{output_directory}').mkdir(parents=True, exist_ok=True)
 
         def ax_water_level():
-            ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", alpha=0.5)
+            ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", legend="water level")
             ax.set_ylabel(unit_for(water_level))
             return ax
 
-        means_pd[labels_for(total_danger, stations)].plot().set_ylabel(unit_for(total_danger))
-        ax = ax_water_level()
-        ax.figure.savefig(f'{output_directory}/danger-and-managed.pdf')
-        plt.close(ax.figure)
+        def finalise_fig(ax, name):
+            fig = ax.figure
+            fig.tight_layout()
+            fig.savefig(f'{output_directory}/{name}.pdf')
+            plt.close(fig)
+
+        means_pd[labels_for(total_danger, stations)].plot(colormap='viridis').set_ylabel(unit_for(total_danger))
+        finalise_fig(ax_water_level(), "danger-and-managed")
+
         styles = ['x--','o--','*--', 'd--']
-
         means_pd[labels_for(danger1, danger2, danger3, danger4)]\
-            .plot(style=styles, ms=2, lw=1).set_ylabel(unit_for(total_danger))
-        ax = ax_water_level()
-        ax.figure.savefig(f'{output_directory}/danger-evolution.pdf')
-        plt.close(ax.figure)
+            .plot(style=styles, ms=2, lw=1, colormap='viridis').set_ylabel(unit_for(total_danger))
+        finalise_fig(ax_water_level(), "danger-evolution")
 
-        means_pd[label_for(avg_distance)].plot().set_ylabel(unit_for(total_danger))
+        means_pd[label_for(avg_distance)].plot(colormap='viridis').set_ylabel(unit_for(total_danger))
         ax = ax_water_level()
-        ax.figure.savefig(f'{output_directory}/average-distance.pdf')
-        plt.close(ax.figure)
+        finalise_fig(ax_water_level(), "average-distance")
 
-        means_pd[label_for(busy_max)].plot().set_ylabel(unit_for(total_danger))
+        means_pd[label_for(busy_max)].plot(colormap='viridis').set_ylabel(unit_for(total_danger))
         ax = ax_water_level()
-        ax.figure.savefig(f'{output_directory}/max-danger-for-station.pdf')
+        finalise_fig(ax_water_level(), "max-danger-for-station")
 # Custom charting
