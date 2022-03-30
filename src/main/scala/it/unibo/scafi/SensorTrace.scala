@@ -63,11 +63,12 @@ object SensorTrace {
     def binarySearch(boundLeft: Int, boundRight: Int): Double = if (boundLeft > boundRight) { //
       spatialSearch(data.last)
     } else {
+      println(boundLeft + boundRight)
       val centerIndex = (boundLeft + boundRight) / 2
       val center = data(centerIndex)
       if (center.timestamp == when) {
         spatialSearch(data(centerIndex))
-      } else if (center.timestamp < when && centerIndex < data.size && data(centerIndex + 1).timestamp > when) { // in-between two data points
+      } else if (center.timestamp < when && centerIndex < data.size - 1 && data(centerIndex + 1).timestamp > when) { // in-between two data points
         // weighted average
         def timeOf(sample: Int) = data(sample).timestamp
         def dataOf(sample: Int) = spatialSearch(data(sample))

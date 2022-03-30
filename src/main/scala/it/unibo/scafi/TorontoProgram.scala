@@ -39,7 +39,8 @@ class TorontoProgram
       )
     val isInDanger = dangerSignal(waterArea, waterLevel)
     val actionNeeded = propagateDangerZone(altitudeArea, isInDanger.exists(_._2))
-    val busy = mux(isFireStation && actionNeeded.size > 1)(1)(0)
+    val busy =
+      mux(isFireStation && actionNeeded.nonEmpty)(1)(0)
     val stationChoice = rep(Option.empty[(ID, Double)]) {
       case some @ Some(elem) if (actionNeeded.exists(_._1 == elem._1)) => some
       case _ => actionNeeded.minByOption(_._2)
