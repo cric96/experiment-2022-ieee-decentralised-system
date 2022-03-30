@@ -96,7 +96,7 @@ deployments:
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: "simulation"
+      fileNameRoot: "simulation-foo"
       exportPath: "data"
       interval: 1
     data:
@@ -147,4 +147,4 @@ export:
 
 terminate:
   - type: AfterTime
-    parameters: 4000 #42800
+    parameters: 1500 #42800

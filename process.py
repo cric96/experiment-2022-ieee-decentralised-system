@@ -416,7 +416,8 @@ if __name__ == '__main__':
         current_experiment_errors = stdevs[experiment]
         ### Custom charting
         generate_all_charts(current_experiment_means, current_experiment_errors, basedir = f'{experiment}/all')
-        means_pd = current_experiment_means.to_dataframe().rename(columns=lambda x: label_for(x)).tail(35000).head(10000)
+        means_pd = current_experiment_means.to_dataframe().rename(columns=lambda x: label_for(x))
+
         current_experiment_errors = stdevs[experiment].to_dataframe().rename(columns=lambda x: label_for(x))
         means_pd = means_pd.fillna(0)
         Path(f'{output_directory}').mkdir(parents=True, exist_ok=True)
@@ -440,11 +441,11 @@ if __name__ == '__main__':
             .plot(style=styles, ms=2, lw=1, colormap=colormap).set_ylabel(unit_for(total_danger))
         finalise_fig(ax_water_level(), "danger-evolution")
 
-        means_pd[label_for(avg_distance)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
-        ax = ax_water_level()
-        finalise_fig(ax_water_level(), "average-distance")
+        #means_pd[label_for(avg_distance)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
+        #ax = ax_water_level()
+        #finalise_fig(ax_water_level(), "average-distance")
 
-        means_pd[label_for(busy_max)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
-        ax = ax_water_level()
-        finalise_fig(ax_water_level(), "max-danger-for-station")
+        #means_pd[label_for(busy_max)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
+        #ax = ax_water_level()
+        #finalise_fig(ax_water_level(), "max-danger-for-station")
 # Custom charting

@@ -110,7 +110,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             if (System.getenv("CI") == "true") {
                 args("-hl", "-t", "2")
             } else {
-                args("-g", "effects/${it.nameWithoutExtension}.json")
+                args("-g", "effects/simulation.json")
             }
             javaLauncher.set(
                 javaToolchains.launcherFor {
