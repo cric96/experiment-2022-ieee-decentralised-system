@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import xarray as xr
 import re
 from pathlib import Path
@@ -270,7 +271,6 @@ if __name__ == '__main__':
         except:
             lastTimeProcessed = -1
         shouldRecompute = not os.path.exists(".skip_data_process") and newestFileTime != lastTimeProcessed
-        shouldRecompute = True
         if not shouldRecompute:
             try:
                 means = pickle.load(open(pickleOutput + '_mean', 'rb'))
@@ -414,28 +414,36 @@ if __name__ == '__main__':
     for experiment in experiments:
         current_experiment_means = means[experiment]
         current_experiment_errors = stdevs[experiment]
+        ### Custom charting
         generate_all_charts(current_experiment_means, current_experiment_errors, basedir = f'{experiment}/all')
-        means_pd = current_experiment_means.to_dataframe().rename(columns=lambda x: label_for(x))
+        means_pd = current_experiment_means.to_dataframe().rename(columns=lambda x: label_for(x)).tail(35000).head(10000)
         current_experiment_errors = stdevs[experiment].to_dataframe().rename(columns=lambda x: label_for(x))
         means_pd = means_pd.fillna(0)
         Path(f'{output_directory}').mkdir(parents=True, exist_ok=True)
-        
-        ax = means_pd[labels_for(total_danger, stations)].plot().set_ylabel(unit_for(total_danger))
-        ax = means_pd[label_for(water_level)].plot(secondary_y = True, lw=3, color="k", alpha=0.5)
-        ax.set_ylabel(unit_for(water_level))
+
+        def ax_water_level():
+            ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", alpha=0.5)
+            ax.set_ylabel(unit_for(water_level))
+            return ax
+
+        means_pd[labels_for(total_danger, stations)].plot().set_ylabel(unit_for(total_danger))
+        ax = ax_water_level()
         ax.figure.savefig(f'{output_directory}/danger-and-managed.pdf')
         plt.close(ax.figure)
-        
-        means_pd[labels_for(danger1, danger2, danger3, danger4, danger5)].plot().set_ylabel(unit_for(total_danger))
-        ax = means_pd[label_for(water_level)].plot(secondary_y = True, lw=3, color="k", alpha=0.5)
-        ax.set_ylabel(unit_for(water_level))
+        styles = ['x--','o--','*--', 'd--']
+
+        means_pd[labels_for(danger1, danger2, danger3, danger4)]\
+            .plot(style=styles, ms=2, lw=1).set_ylabel(unit_for(total_danger))
+        ax = ax_water_level()
         ax.figure.savefig(f'{output_directory}/danger-evolution.pdf')
         plt.close(ax.figure)
-        
-        means_pd[label_for(avg_distance)].plot().set_ylabel(unit_for(total_danger))
-        ax = means_pd[label_for(water_level)].plot(secondary_y = True, lw=3, color="k", alpha=0.5)
-        ax.set_ylabel(unit_for(water_level))
-        ax.figure.savefig(f'{output_directory}/average-distance.pdf')
-        
 
+        means_pd[label_for(avg_distance)].plot().set_ylabel(unit_for(total_danger))
+        ax = ax_water_level()
+        ax.figure.savefig(f'{output_directory}/average-distance.pdf')
+        plt.close(ax.figure)
+
+        means_pd[label_for(busy_max)].plot().set_ylabel(unit_for(total_danger))
+        ax = ax_water_level()
+        ax.figure.savefig(f'{output_directory}/max-danger-for-station.pdf')
 # Custom charting
