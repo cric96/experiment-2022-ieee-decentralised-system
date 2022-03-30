@@ -425,6 +425,7 @@ if __name__ == '__main__':
         def ax_water_level():
             ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", legend="water level")
             ax.set_ylabel(unit_for(water_level))
+            ax.hlines(y=0.6, xmin=0, xmax=maxTime, colors='r', lw=1, alpha=0.3, linestyle=":", label="danger threshold")
             return ax
 
         def finalise_fig(ax, name):
