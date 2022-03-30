@@ -3,7 +3,7 @@ import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import it.unibo.geo.altitude.AltitudeService
 import it.unibo.scafi.incarnation.{BlockSWithProcesses, Distance, ProcessFix}
 
-class LeaderElection
+class TorontoProgram
     extends AggregateProgram
     with StandardSensors
     with ScafiAlchemistSupport
