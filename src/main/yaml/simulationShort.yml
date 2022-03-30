@@ -64,7 +64,7 @@ _program: &program
     type: Event
     actions:
       - type: RunScafiProgram
-        parameters: [it.unibo.scafi.LeaderElection, 5]
+        parameters: [ it.unibo.scafi.TorontoProgram, 5 ]
   - program: send
 
 deployments:
@@ -96,7 +96,7 @@ deployments:
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: "coord"
+      fileNameRoot: "simulation"
       exportPath: "data"
       interval: 1
     data:
