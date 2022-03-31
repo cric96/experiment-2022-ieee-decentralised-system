@@ -421,7 +421,12 @@ if __name__ == '__main__':
         current_experiment_errors = stdevs[experiment].to_dataframe().rename(columns=lambda x: label_for(x))
         means_pd = means_pd.fillna(0)
         Path(f'{output_directory}').mkdir(parents=True, exist_ok=True)
-        colormap = "winter"
+        def normalize_color_map(cmap=plt.cm.viridis, interval=(0.3, 0.9), precision=10, name="mycmap"):
+            min_val, max_val = interval
+            colors = cmap(np.linspace(min_val, max_val, precision))
+            return matplotlib.colors.LinearSegmentedColormap.from_list(name, colors)
+        #colormap = normalize_color_map()
+
         def ax_water_level():
             ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", legend="water level")
             ax.set_ylabel(unit_for(water_level))
@@ -434,12 +439,12 @@ if __name__ == '__main__':
             fig.savefig(f'{output_directory}/{name}.pdf')
             plt.close(fig)
 
-        means_pd[labels_for(total_danger, stations)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
+        means_pd[labels_for(total_danger, stations)].plot().set_ylabel(unit_for(total_danger))
         finalise_fig(ax_water_level(), "danger-and-managed")
 
         styles = ['x--','o--','*--', 'd--']
         means_pd[labels_for(danger1, danger2, danger3, danger4)]\
-            .plot(style=styles, ms=2, lw=1, colormap=colormap).set_ylabel(unit_for(total_danger))
+            .plot(style=styles, ms=2, lw=1).set_ylabel(unit_for(total_danger))
         finalise_fig(ax_water_level(), "danger-evolution")
 
         #means_pd[label_for(avg_distance)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
