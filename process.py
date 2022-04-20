@@ -236,17 +236,18 @@ if __name__ == '__main__':
         'danger-4[sum]', 'danger-5[sum]',
     )
     labels = {
-        stations: Measure(r'allocated operators'),
+        stations: Measure(r'alerts managed by stations'),
         busy_sum: Measure(r"stations in action"),
         busy_max : Measure(r"signal handled by stations"),
         avg_distance : Measure(r"distance from signal"),
         water_level: Measure(r"water level", "mm"),
-        total_danger : Measure(r"nodes warned", "nodes"),
+        total_danger : Measure(r"generated alerts", "alerts"),
         danger1 : Measure(r"one signal", "nodes"),
         danger2: Measure(r"two signals", "nodes"),
         danger3: Measure(r"three signals", "nodes"),
         danger4: Measure(r"four signals", "nodes"),
         danger5: Measure(r"five signals", "nodes"),
+
     }
     def derivativeOrMeasure(variable_name):
         if variable_name.endswith('dt'):
@@ -425,12 +426,10 @@ if __name__ == '__main__':
             min_val, max_val = interval
             colors = cmap(np.linspace(min_val, max_val, precision))
             return matplotlib.colors.LinearSegmentedColormap.from_list(name, colors)
-        #colormap = normalize_color_map()
 
         def ax_water_level():
-            ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, color="k", legend="water level")
-            ax.set_ylabel(unit_for(water_level))
-            ax.hlines(y=0.6, xmin=0, xmax=maxTime, colors='r', lw=1, alpha=0.3, linestyle=":", label="danger threshold")
+            ax = means_pd[label_for(water_level)].plot(secondary_y=True, lw=1, mark_right = False, color="k", linestyle="--", legend="water level")
+            ax.set_ylabel(unit_for("mean water level"))
             return ax
 
         def finalise_fig(ax, name):
@@ -439,19 +438,11 @@ if __name__ == '__main__':
             fig.savefig(f'{output_directory}/{name}.pdf')
             plt.close(fig)
 
-        means_pd[labels_for(total_danger, stations)].plot().set_ylabel(unit_for(total_danger))
+        means_pd[labels_for(total_danger, stations)].plot(title="Generated alerts over time").set_ylabel("alerts")
         finalise_fig(ax_water_level(), "danger-and-managed")
 
-        styles = ['x--','o--','*--', 'd--']
+        styles = ['x-','o-','*-', 'd-']
         means_pd[labels_for(danger1, danger2, danger3, danger4)]\
-            .plot(style=styles, ms=2, lw=1).set_ylabel(unit_for(total_danger))
+            .plot(style=styles, ms=2, lw=1, title="Alerted devices over time").set_ylabel("devices receiving signals (devices)")
         finalise_fig(ax_water_level(), "danger-evolution")
-
-        #means_pd[label_for(avg_distance)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
-        #ax = ax_water_level()
-        #finalise_fig(ax_water_level(), "average-distance")
-
-        #means_pd[label_for(busy_max)].plot(colormap=colormap).set_ylabel(unit_for(total_danger))
-        #ax = ax_water_level()
-        #finalise_fig(ax_water_level(), "max-danger-for-station")
 # Custom charting
