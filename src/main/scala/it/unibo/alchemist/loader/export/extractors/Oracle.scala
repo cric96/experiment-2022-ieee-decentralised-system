@@ -19,7 +19,6 @@ class Oracle extends Extractor[Int] {
     val ids = fireStation.map(_.get[Int]("solve-id")).filter(_ > 0).toSet
     util.Map.of("station-handle", ids.size)
   }
-  Ordered
   private def initFireStations[T](env: Environment[T, _]): List[NodeManager] =
     env.getNodes
       .iterator()
