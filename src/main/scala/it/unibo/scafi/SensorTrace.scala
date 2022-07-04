@@ -15,8 +15,8 @@ object SensorTrace {
   private type SpatioTemporalData = Seq[SpatioTemporalRecord]
   // Constant
   private lazy val rainGaugeData = normalise(loadFromSource(Source.fromResource("toronto.csv")))
-  def perceive(position: Point3D, timestap: Double): Double =
-    spatioTemporalSearch(timestap, position, rainGaugeData)
+  def perceive(position: Point3D, timestamp: Double): Double =
+    spatioTemporalSearch(timestamp, position, rainGaugeData)
 
   // Utility
   private def loadFromSource(input: Source): SpatioTemporalData =
@@ -63,7 +63,6 @@ object SensorTrace {
     def binarySearch(boundLeft: Int, boundRight: Int): Double = if (boundLeft > boundRight) { //
       spatialSearch(data.last)
     } else {
-      println(boundLeft + boundRight)
       val centerIndex = (boundLeft + boundRight) / 2
       val center = data(centerIndex)
       if (center.timestamp == when) {
