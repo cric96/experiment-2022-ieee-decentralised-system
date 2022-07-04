@@ -33,10 +33,11 @@ class TorontoProgram
       )
     val altitudeArea =
       localLeaderElection(
-        symmetryBreaker = altitude,
+        symmetryBreaker = -altitude, // in this way I select the lowest node in a zone
         radius = grain,
         distanceFunction = Distance(altitudeMetric, fastGradient)
       )
+
     val isInDanger = dangerSignal(waterArea, waterLevel)
     val actionNeeded = propagateDangerZone(altitudeArea, isInDanger.exists(_._2))
     val busy =
@@ -45,13 +46,17 @@ class TorontoProgram
       case some @ Some(elem) if (actionNeeded.exists(_._1 == elem._1)) => some
       case _ => actionNeeded.minByOption(_._2)
     }
+    val alignment = align(altitudeArea) { k =>
+      broadcast(mid() == k, altitude)
+    }
     node.put("danger-map", isInDanger)
     node.put("id", mid())
     node.put("action-needed", actionNeeded)
     node.put("water-level", waterLevel)
     node.put("altitude", altitude)
+    node.put("leader-altitude", altitudeArea)
+    node.put("leader-altitude-value", alignment)
     node.put("danger", isInDanger.exists(_._2))
-    node.put("altitude-area", altitudeArea)
     node.put("water-level-area", waterArea)
     node.put("station-received", mux(isFireStation)(isInDanger.size)(0))
     node.put("station-busy", busy)
