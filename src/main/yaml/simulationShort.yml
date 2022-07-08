@@ -101,7 +101,7 @@ export:
       interval: 1
     data:
       - time
-      - type: Oracle
+      - type: AlarmHandledByStation
       - molecule: station-busy
         value-filter: onlyfinite
         aggregators: [ sum, max ]

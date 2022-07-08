@@ -92,11 +92,12 @@ trait BlockSWithProcesses {
         // started the process, but I am not the leader anymore, so I suppress that process
         (Terminated, Double.PositiveInfinity)
       } {
+        val anyNodeInBubble = includingSelf.anyHood(nbr(localLeader) == processId)
         val isEdge = detectedEdge(distanceFromLeader, processId, uid, distanceFunction.metric, localLeader)
         val inBubble = distanceFromLeader <= radius // check if this zone is inside the bubble
         // check if any node near to me have this zone activate
         val status =
-          mux(inBubble && !isEdge)(Output)(External)
+          mux(inBubble && anyNodeInBubble)(Output)(External)
         // node.put(s"distance-$processId", distanceFromLeader)
         // node.put(s"status-$processId", status)
         (status, distanceFromLeader)
@@ -145,7 +146,7 @@ trait BlockSWithProcesses {
     val leaderHop = share(0) { case (difference, nbrLeaderHop) =>
       mux(processId == uid)(0) { // the leader share the edge from them, 0 in the source zone
         val distanceField = excludingSelf // the neighbourhood field of distances
-          .reifyField(nbr(distanceFromLeader + metric()))
+          .reifyField(nbr(distanceFromLeader) + metric())
         // the node collected before me
         val parents = distanceField.filter(_._2 <= distanceFromLeader).keys.toSet
         // node after me

@@ -4,7 +4,7 @@ import it.unibo.geo.serialize.Representation._
 import upickle.default._
 
 import scala.io.Source
-import scala.jdk.CollectionConverters.SeqHasAsJava
+import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava}
 class AltitudeFromResource(val resource: String) extends AltitudeEvaluation {
   private val rawData = Source.fromResource(resource).getLines().mkString
   private val altitudeData = read[List[Altitude]](rawData)
@@ -14,4 +14,6 @@ class AltitudeFromResource(val resource: String) extends AltitudeEvaluation {
 
   override def in(lat: Double, lon: Double): Double =
     index.nearest(Array(lon, lat)).value
+
+  val keyPointPosition: Iterable[(Double, Double)] = position.asScala.map { case Array(lon, lat) => (lat, lon) }
 }
