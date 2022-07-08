@@ -10,6 +10,7 @@ requests = "0.7.0"
 ujson = "1.5.0"
 upickle = "1.4.3"
 smile = "2.6.0"
+oslib = "0.8.1"
 
 [libraries]
 alchemist = { module = "it.unibo.alchemist:alchemist", version.ref = "alchemist" }
@@ -25,6 +26,7 @@ requests = { module = "com.lihaoyi:requests_2.13", version.ref = "requests" }
 ujson = { module = "com.lihaoyi:ujson_2.13", version.ref = "ujson" }
 upickle = { module = "com.lihaoyi:upickle_2.13", version.ref = "upickle" }
 smile = { module = "com.github.haifengl:smile-scala_2.13", version.ref = "smile" }
+oslib = { module = "com.lihaoyi:os-lib_2.13", version.ref = "oslib" }
 
 [bundles]
 alchemist-protelis = [ "alchemist", "alchemist-protelis" ]

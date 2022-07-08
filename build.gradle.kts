@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.ujson)
     implementation(libs.upickle)
     implementation(libs.smile)
+    implementation(libs.oslib)
     implementation(libs.bundles.monocle.full)
     // Test
     testImplementation(libs.junit.core)
