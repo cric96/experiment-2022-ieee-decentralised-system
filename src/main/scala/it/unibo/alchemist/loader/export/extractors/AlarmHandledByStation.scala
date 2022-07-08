@@ -7,7 +7,7 @@ import it.unibo.alchemist.model.interfaces.{Environment, Reaction, Time}
 import java.util
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
-class Oracle extends Extractor[Int] {
+class AlarmHandledByStation extends Extractor[Int] {
   override def getColumnNames: util.List[String] = util.List.of("station-handle")
   override def extractData[T](
       environment: Environment[T, _],
