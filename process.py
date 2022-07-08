@@ -4,6 +4,8 @@ import xarray as xr
 import re
 from pathlib import Path
 import collections
+import json
+from celluloid import Camera
 
 def distance(val, ref):
     return abs(ref - val)
@@ -445,4 +447,47 @@ if __name__ == '__main__':
         means_pd[labels_for(danger1, danger2, danger3, danger4)]\
             .plot(style=styles, ms=2, lw=1, title="Alerted devices over time").set_ylabel("devices receiving signals (devices)")
         finalise_fig(ax_water_level(), "danger-evolution")
-# Custom charting
+
+def riskMapPlot(fileName, render):
+    with open(fileName, 'r') as file:
+        riskMap = json.load(file)
+        lat = [element[0] for element in riskMap]
+        lon = [element[1] for element in riskMap]
+        risk = [element[2] for element in riskMap]
+        plt.scatter(x=lon, y=lat, c=risk)
+        #plt.show()
+        #plt.savefig(str(fileName) + ".png")
+        render(fileName)
+        
+def usingNumber(file):
+    _, number = file.split('-')
+    return int(number)
+
+sortedFile = os.listdir('data/riskmap')
+sortedFile.sort(key=usingNumber)
+
+def storeInFile(fileName):
+    folder = "charts/riskmap/"
+    allPath = fileName.split("/")
+    allPath.reverse()
+    fileName = allPath[0]
+    if(not os.path.exists(folder)):
+        os.mkdir(folder)
+    plt.savefig(folder + fileName + ".png")
+
+for x in sortedFile:
+    riskMapPlot('data/riskmap/' + x, storeInFile)
+
+def renderInVideo():
+    camera = Camera(plt.figure())
+    def storeInVideo(fineName):
+        camera.snap()
+    for x in sortedFile:
+        riskMapPlot('data/riskmap/' + x, storeInVideo)
+    anim = camera.animate(blit=True)
+    anim.save('risks-video.mp4')
+
+
+
+
+
