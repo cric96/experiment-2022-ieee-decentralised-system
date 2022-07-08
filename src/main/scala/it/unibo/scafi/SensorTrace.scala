@@ -82,6 +82,6 @@ object SensorTrace {
         binarySearch(centerIndex + 1, boundRight)
       }
     }
-    binarySearch(0, data.size)
+    binarySearch(0, data.size - 1)
   }
 }

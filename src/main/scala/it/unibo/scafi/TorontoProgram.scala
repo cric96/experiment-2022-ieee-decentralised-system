@@ -2,7 +2,7 @@ package it.unibo.scafi
 import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
 import it.unibo.geo.altitude.AltitudeService
 import it.unibo.scafi.incarnation.{BlockSWithProcesses, Distance, ProcessFix}
-
+import Builtins._
 class TorontoProgram
     extends AggregateProgram
     with StandardSensors
@@ -47,7 +47,7 @@ class TorontoProgram
       case _ => actionNeeded.minByOption(_._2)
     }
     val alignment = align(altitudeArea) { k =>
-      broadcast(mid() == k, altitude)
+      GWithShare[Double](mid() == k, altitude, identity[Double], nbrRange)
     }
     node.put("danger-map", isInDanger)
     node.put("id", mid())
@@ -94,14 +94,14 @@ class TorontoProgram
           }
         }(Output)
         val potential = fastGradient(nbrRange, source)
-        val count = C[Double, Int](potential, _ + _, 1, 0)
-        val waterLevelArea = C[Double, Double](potential, _ + _, waterLevel, 0.0)
+        val count = CWithShare[Double, Int](potential, _ + _, 1, 0)
+        val waterLevelArea = CWithShare[Double, Double](potential, _ + _, waterLevel, 0.0)
         val averageWaterLevel = waterLevelArea / count
-        node.put("water-level-average", broadcast(source, averageWaterLevel))
+        node.put("water-level-average", broadcastAlong(potential, nbrRange, averageWaterLevel))
         node.put("potential-danger", potential)
         val isInDanger = source && averageWaterLevel > dangerLevel && count > 1
         POut(
-          broadcast(source, isInDanger),
+          broadcastAlong(potential, nbrRange, isInDanger),
           status
         )
       },
@@ -127,4 +127,34 @@ class TorontoProgram
     1 to dangers.size foreach (x => node.put(s"danger-$x", 1)) // add dangers
   }
 
+  def CWithShare[P: Bounded, V](potential: P, acc: (V, V) => V, local: V, Null: V): V =
+    share(local) { (_, nbrv) =>
+      acc(
+        local,
+        foldhood(Null)(acc) {
+          mux(nbr(findParent(potential)) == mid())(nbrv())(nbr(Null))
+        }
+      )
+    }
+
+  def GAlongWithShare[V](g: Double, metric: Metric, field: V, acc: V => V): V = {
+    share(field) { case (_, nbrField) =>
+      mux(g == 0.0)(field) {
+        excludingSelf.minHoodSelector[Double, V](nbr(g) + metric())(acc(nbrField())).getOrElse(field)
+      }
+    }
+  }
+
+  def GWithShare[V](source: Boolean, field: V, acc: V => V, metric: () => Double): V =
+    share((Double.MaxValue, field)) { case ((dist, value), nbrvalues) =>
+      mux(source) {
+        (0.0, field)
+      } {
+        excludingSelf
+          .minHoodSelector(nbrvalues()._1 + metric())((nbrvalues()._1 + metric() + metric(), acc(nbrvalues()._2)))
+          .getOrElse((Double.PositiveInfinity, field))
+      }
+    }._2
+
+  def broadcastAlong[V](g: Double, metric: Metric, value: V) = GAlongWithShare(g, metric, value, identity[V])
 }
