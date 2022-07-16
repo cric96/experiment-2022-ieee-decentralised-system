@@ -30,4 +30,4 @@ export:
 
 terminate:
   - type: AfterTime
-    parameters: 39000
+    parameters: 40000

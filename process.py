@@ -6,6 +6,9 @@ from pathlib import Path
 import collections
 import json
 from celluloid import Camera
+import geopandas
+import osmnx as ox
+from osmnx.projection import project_geometry
 
 def distance(val, ref):
     return abs(ref - val)
@@ -448,23 +451,22 @@ if __name__ == '__main__':
             .plot(style=styles, ms=2, lw=1, title="Alerted devices over time").set_ylabel("devices receiving signals (devices)")
         finalise_fig(ax_water_level(), "danger-evolution")
 
-def riskMapPlot(fileName, render):
-    with open(fileName, 'r') as file:
-        riskMap = json.load(file)
-        lat = [element[0] for element in riskMap]
-        lon = [element[1] for element in riskMap]
-        risk = [element[2] for element in riskMap]
-        plt.scatter(x=lon, y=lat, c=risk)
-        #plt.show()
-        #plt.savefig(str(fileName) + ".png")
-        render(fileName)
-        
-def usingNumber(file):
-    _, number = file.split('-')
-    return int(number)
+place_names = ["Toronto"]
+toronto = ox.geocode_to_gdf(place_names).to_crs(epsg=4326)
 
-sortedFile = os.listdir('data/riskmap')
-sortedFile.sort(key=usingNumber)
+def riskMapPlot(riskMap, render):
+    print(riskMap['time'])
+    lat = [element['lat'] for element in riskMap['level']]
+    lon = [element['lon'] for element in riskMap['level']]
+    risk = [element['risk'] for element in riskMap['level']]
+    ax = plt.gca()
+    ax = toronto.plot(ax=ax, color='white', edgecolor='black')
+    ax.scatter(x=lon, y=lat, c=risk, alpha=0.7)
+    render(riskMap['time'])
+    #plt.close(fig)
+
+#sortedFile = os.listdir('data/riskmap')
+#sortedFile.sort(key=usingNumber)
 
 def storeInFile(fileName):
     folder = "charts/riskmap/"
@@ -475,19 +477,20 @@ def storeInFile(fileName):
         os.mkdir(folder)
     plt.savefig(folder + fileName + ".png")
 
-for x in sortedFile:
-    riskMapPlot('data/riskmap/' + x, storeInFile)
-
 def renderInVideo():
-    camera = Camera(plt.figure())
-    def storeInVideo(fineName):
-        camera.snap()
-    for x in sortedFile:
-        riskMapPlot('data/riskmap/' + x, storeInVideo)
-    anim = camera.animate(blit=True)
-    anim.save('risks-video.mp4')
+    with open('data/riskmap/map-seed-0.0', 'r') as file:
+        riskMap = json.load(file)
+        camera = Camera(plt.figure())
+        def storeInVideo(time):
+            camera.snap()
+        for x in riskMap:
+            riskMapPlot(x, storeInVideo)
+        anim = camera.animate(blit=True)
+        anim.save('risks-video.mp4')
+
+renderInVideo()
+#for x in sortedFile:
+#    riskMapPlot('data/riskmap/' + x, storeInFile)
 
 
-
-
-
+#renderInVideo()
