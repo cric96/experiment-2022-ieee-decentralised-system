@@ -19,11 +19,4 @@ class AlarmHandledByStation extends Extractor[Int] {
     val ids = fireStation.map(_.get[Int]("solve-id")).filter(_ > 0).toSet
     util.Map.of("station-handle", ids.size)
   }
-  private def initFireStations[T](env: Environment[T, _]): List[NodeManager] =
-    env.getNodes
-      .iterator()
-      .asScala
-      .toList
-      .map(node => new SimpleNodeManager[T](node))
-      .filter(_.has("fire"))
 }

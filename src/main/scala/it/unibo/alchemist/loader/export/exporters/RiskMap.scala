@@ -8,10 +8,12 @@ import it.unibo.scafi.space.Point3D
 import upickle.default._
 class RiskMap[T, P <: Position[P]](val path: String, val name: String, val samplingInterval: Double)
     extends AbstractExporter[T, P](samplingInterval: Double) {
-
-  lazy val altitudesInToronto = AltitudeService.keyPointPosition.map { case (lat, lon) => AltitudeService.in(lat, lon) }
-  lazy val min = altitudesInToronto.min
-  lazy val max = altitudesInToronto.max
+  private lazy val altitudesInToronto = AltitudeService.keyPointPosition.map { case (lat, lon) =>
+    AltitudeService.in(lat, lon)
+  }
+  private lazy val min = altitudesInToronto.min
+  private lazy val max = altitudesInToronto.max
+  private var riskSnapshotData: Map[String, Seq[RiskMapInfo.RiskSnapshot]] = Map.empty
   override def exportData(
       environment: Environment[T, P],
       reaction: Reaction[T],
@@ -19,15 +21,27 @@ class RiskMap[T, P <: Position[P]](val path: String, val name: String, val sampl
       l: Long
   ): Unit = {
     val riskMap = AltitudeService.keyPointPosition.map { case (lat, lon) =>
-      (lat, lon, SensorTrace.perceive(Point3D(lat, lon, 0), time.toDouble), boundAltitude(AltitudeService.in(lat, lon)))
+      RiskMapInfo.RiskLevel(
+        lat,
+        lon,
+        SensorTrace.perceive(Point3D(lat, lon, 0), time.toDouble) / boundAltitude(AltitudeService.in(lat, lon))
+      )
     }
-    os.makeDir.all(os.pwd / os.RelPath(path))
-    os.write.over(os.pwd / os.RelPath(path) / s"$name-$l", write(riskMap))
+    val snapshot = RiskMapInfo.RiskSnapshot(l, riskMap)
+    riskSnapshotData = riskSnapshotData + (variablesDescriptor -> (riskSnapshotData.getOrElse(
+      variablesDescriptor,
+      Seq.empty
+    ) :+ snapshot))
   }
 
-  override def close(environment: Environment[T, P], time: interfaces.Time, l: Long): Unit = {}
+  override def close(environment: Environment[T, P], time: interfaces.Time, l: Long): Unit = {
+    val allSnapshots = riskSnapshotData(variablesDescriptor)
+    os.write.over(os.pwd / os.RelPath(path) / s"$name-$variablesDescriptor", write(allSnapshots))
+    riskSnapshotData -= variablesDescriptor
+  }
 
-  override def setup(environment: Environment[T, P]): Unit = {}
+  override def setup(environment: Environment[T, P]): Unit =
+    os.makeDir.all(os.pwd / os.RelPath(path))
 
   private def boundAltitude(altitude: Double): Double =
     ((altitude - min) / (max - min)) + 1 // avoid 0 as denominator
