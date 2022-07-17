@@ -27,7 +27,7 @@ class RiskMap[T, P <: Position[P]](val path: String, val name: String, val sampl
         SensorTrace.perceive(Point3D(lat, lon, 0), time.toDouble) / boundAltitude(AltitudeService.in(lat, lon))
       )
     }
-    val snapshot = RiskMapInfo.RiskSnapshot(l, riskMap)
+    val snapshot = RiskMapInfo.RiskSnapshot(time.toDouble.toLong, riskMap)
     riskSnapshotData = riskSnapshotData + (variablesDescriptor -> (riskSnapshotData.getOrElse(
       variablesDescriptor,
       Seq.empty

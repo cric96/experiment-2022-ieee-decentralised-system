@@ -94,6 +94,9 @@ deployments:
       shared: *shared
 
 export:
+  - type: FireStationPosition
+    parameters: [ "data/firestation", "positions", 100 ]
+    data: [ ]
   - type: CSVExporter
     parameters:
       fileNameRoot: "simulation-foo"
@@ -144,7 +147,8 @@ export:
       - molecule: danger-10
         value-filter: onlyfinite
         aggregators: [ sum ]
+      - type: AverageDistanceFromAlarm
 
 terminate:
   - type: AfterTime
-    parameters: 1500 #42800
+    parameters: 40000
