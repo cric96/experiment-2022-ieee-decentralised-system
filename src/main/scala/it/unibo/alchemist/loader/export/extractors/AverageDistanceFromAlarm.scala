@@ -1,6 +1,6 @@
 package it.unibo.alchemist.loader.`export`.extractors
 
-import it.unibo.alchemist.loader.`export`.Extractor
+import it.unibo.alchemist.loader.`export`.{ExportUtil, Extractor}
 import it.unibo.alchemist.model.implementations.nodes.SimpleNodeManager
 import it.unibo.alchemist.model.interfaces
 import it.unibo.alchemist.model.interfaces.{Environment, Position, Reaction}
@@ -17,8 +17,7 @@ class AverageDistanceFromAlarm[P <: Position[P]] extends Extractor[Double] {
       l: Long
   ): util.Map[String, Double] = {
     val unsafeEnvironment = environment.asInstanceOf[Environment[T, P]]
-    val fireStation = initFireStations(unsafeEnvironment)
-    val ids = fireStation.map(_.get[Int]("solve-id")).filter(_ > 0).toSet
+    val fireStation = ExportUtil.initFireStations(environment)
     val stationAndAlarm = fireStation
       .map(node => (node, node.get[Int]("solve-id")))
       .filter { case (_, alarm) => alarm > 0 }

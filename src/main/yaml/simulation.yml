@@ -144,6 +144,7 @@ export:
       - molecule: danger-10
         value-filter: onlyfinite
         aggregators: [ sum ]
+      - type: AverageDistanceFromAlarm
 
 terminate:
   - type: AfterTime

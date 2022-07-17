@@ -454,37 +454,44 @@ if __name__ == '__main__':
 place_names = ["Toronto"]
 toronto = ox.geocode_to_gdf(place_names).to_crs(epsg=4326)
 
-def riskMapPlot(riskMap, render):
+def riskMapPlot(riskMap, stations, render):
     print(riskMap['time'])
-    lat = [element['lat'] for element in riskMap['level']]
-    lon = [element['lon'] for element in riskMap['level']]
+    filteredPosition = [element for element in stations['position'] if element[0] > 43.6]
+    latRisk = [element['lat'] for element in riskMap['level']]
+    lonRisk = [element['lon'] for element in riskMap['level']]
+    latStation = [element[1] for element in filteredPosition]
+    longStation = [element[0] for element in filteredPosition]
     risk = [element['risk'] for element in riskMap['level']]
     ax = plt.gca()
     ax = toronto.plot(ax=ax, color='white', edgecolor='black')
-    ax.scatter(x=lon, y=lat, c=risk, alpha=0.7)
+    ax.scatter(x=lonRisk, y=latRisk, c=risk, alpha=0.7)
+    ax.scatter(x=latStation, y=longStation, marker="x", c='red', s=4.0)
     render(riskMap['time'])
-    #plt.close(fig)
-
 #sortedFile = os.listdir('data/riskmap')
 #sortedFile.sort(key=usingNumber)
 
-def storeInFile(fileName):
+def storeInFile(time):
     folder = "charts/riskmap/"
-    allPath = fileName.split("/")
-    allPath.reverse()
-    fileName = allPath[0]
     if(not os.path.exists(folder)):
         os.mkdir(folder)
-    plt.savefig(folder + fileName + ".png")
+    plt.savefig(folder + str(time) + ".png")
+    plt.clf()
+    plt.cla()
+    plt.close()
 
 def renderInVideo():
-    with open('data/riskmap/map-seed-0.0', 'r') as file:
-        riskMap = json.load(file)
+    with open('data/riskmap/map-seed-0.0', 'r') as riskmapFile,\
+            open('data/firestation/positions-seed-0.0', 'r') as fireStationFile:
+        riskMap = json.load(riskmapFile)
+        #riskMap = riskMap[:20]
+        fireStationMap = json.load(fireStationFile)
+        #fireStationMap = fireStationMap[:20]
+        riskAndFirestation = zip(riskMap, fireStationMap)
         camera = Camera(plt.figure())
         def storeInVideo(time):
             camera.snap()
-        for x in riskMap:
-            riskMapPlot(x, storeInVideo)
+        for (riskSnapshot, fireStationSnapshot) in riskAndFirestation:
+            riskMapPlot(riskSnapshot, fireStationSnapshot, storeInVideo)
         anim = camera.animate(blit=True)
         anim.save('risks-video.mp4')
 
