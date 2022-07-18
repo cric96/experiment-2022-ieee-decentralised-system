@@ -13,7 +13,7 @@ class AlarmHandledByStation extends Extractor[Int] {
       time: Time,
       l: Long
   ): util.Map[String, Int] = {
-    val fireStation = ExportUtil.initFireStations(environment)
+    val fireStation = ExportUtil.getFireStationsFromEnvironment(environment)
     val ids = fireStation.map(_.get[Int]("solve-id")).filter(_ > 0).toSet
     util.Map.of("station-handle", ids.size)
   }
