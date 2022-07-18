@@ -10,7 +10,7 @@ class FireStationPosition[T, P <: Position[P]](val path: String, val name: Strin
 
   var positionForExperiment: Map[String, Seq[FireStationSnapshot]] = Map.empty
   override def exportData(environment: Environment[T, P], reaction: Reaction[T], time: Time, l: Long): Unit = {
-    val fireStation = ExportUtil.initFireStations(environment)
+    val fireStation = ExportUtil.getFireStationsFromEnvironment(environment)
     val stationAndAlarm = fireStation
       .map(node => (node, node.get[Int]("solve-id")))
       .filter { case (_, alarm) => alarm > 0 }
@@ -21,7 +21,6 @@ class FireStationPosition[T, P <: Position[P]](val path: String, val name: Strin
       .map(position => (position.getCoordinate(0), position.getCoordinate(1)))
 
     val snapshot = FireStationSnapshot(time.toDouble.toLong, stationsInAlarm)
-    println(snapshot)
     positionForExperiment += variablesDescriptor -> (positionForExperiment.getOrElse(
       variablesDescriptor,
       Seq.empty

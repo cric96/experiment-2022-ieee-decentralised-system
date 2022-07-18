@@ -1,8 +1,9 @@
 package it.unibo.scafi
 import it.unibo.alchemist.model.scafi.ScafiIncarnationForAlchemist._
-import it.unibo.geo.altitude.AltitudeService
+import it.unibo.geo.altitude.{AltitudeService, RiskService}
 import it.unibo.scafi.incarnation.{BlockSWithProcesses, Distance, ProcessFix}
 import Builtins._
+import it.unibo.alchemist.model.implementations.nodes.SimpleNodeManager
 class TorontoProgram
     extends AggregateProgram
     with StandardSensors
@@ -21,6 +22,7 @@ class TorontoProgram
   private lazy val dangerLevel = node.get[Double]("dangerThr")
 
   override def main(): Any = {
+    val self = node.asInstanceOf[SimpleNodeManager[Any]].node
     val waterLevel = perceiveWaterLevel()
     val altitude = altitudeLevel()
     val altitudeMetric: Metric = () => math.hypot(nbrRange(), altitude - nbr(altitude))
@@ -63,6 +65,12 @@ class TorontoProgram
     node.put("total-danger", mux(actionNeeded.keySet.contains(mid()))(1)(0))
     node.put("solve", mux(isFireStation)(stationChoice.map(_._2).getOrElse(Double.NaN))(Double.NaN))
     node.put("solve-id", mux(isFireStation)(stationChoice.map(_._1).getOrElse(-1))(-1))
+    node.put(
+      "risk-level",
+      mux(isInDanger.exists(_._2) && altitudeArea == mid())(RiskService.evalRiskOf(self, alchemistEnvironment))(
+        Double.PositiveInfinity
+      )
+    )
     dangerExport(actionNeeded)
     waterArea
   }

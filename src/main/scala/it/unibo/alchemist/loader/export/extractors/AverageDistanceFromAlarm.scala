@@ -17,7 +17,7 @@ class AverageDistanceFromAlarm[P <: Position[P]] extends Extractor[Double] {
       l: Long
   ): util.Map[String, Double] = {
     val unsafeEnvironment = environment.asInstanceOf[Environment[T, P]]
-    val fireStation = ExportUtil.initFireStations(environment)
+    val fireStation = ExportUtil.getFireStationsFromEnvironment(environment)
     val stationAndAlarm = fireStation
       .map(node => (node, node.get[Int]("solve-id")))
       .filter { case (_, alarm) => alarm > 0 }

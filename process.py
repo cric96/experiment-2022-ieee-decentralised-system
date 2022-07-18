@@ -451,9 +451,6 @@ if __name__ == '__main__':
             .plot(style=styles, ms=2, lw=1, title="Alerted devices over time").set_ylabel("devices receiving signals (devices)")
         finalise_fig(ax_water_level(), "danger-evolution")
 
-place_names = ["Toronto"]
-toronto = ox.geocode_to_gdf(place_names).to_crs(epsg=4326)
-
 def riskMapPlot(riskMap, stations, render):
     print(riskMap['time'])
     filteredPosition = [element for element in stations['position'] if element[0] > 43.6]
@@ -463,12 +460,9 @@ def riskMapPlot(riskMap, stations, render):
     longStation = [element[0] for element in filteredPosition]
     risk = [element['risk'] for element in riskMap['level']]
     ax = plt.gca()
-    ax = toronto.plot(ax=ax, color='white', edgecolor='black')
     ax.scatter(x=lonRisk, y=latRisk, c=risk, alpha=0.7)
     ax.scatter(x=latStation, y=longStation, marker="x", c='red', s=4.0)
     render(riskMap['time'])
-#sortedFile = os.listdir('data/riskmap')
-#sortedFile.sort(key=usingNumber)
 
 def storeInFile(time):
     folder = "charts/riskmap/"
@@ -494,10 +488,5 @@ def renderInVideo():
             riskMapPlot(riskSnapshot, fireStationSnapshot, storeInVideo)
         anim = camera.animate(blit=True)
         anim.save('risks-video.mp4')
-
-renderInVideo()
-#for x in sortedFile:
-#    riskMapPlot('data/riskmap/' + x, storeInFile)
-
 
 #renderInVideo()

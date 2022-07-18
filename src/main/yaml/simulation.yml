@@ -59,6 +59,8 @@ _shared: &shared
     concentration: *grain
   - molecule: dangerThr
     concentration: 0.6
+  - molecule: risk-level
+    concentration: 0.0
 _program: &program
   - time-distribution: 0.3
     type: Event
@@ -145,6 +147,10 @@ export:
         value-filter: onlyfinite
         aggregators: [ sum ]
       - type: AverageDistanceFromAlarm
+      - molecule: risk-level
+        value-filter: onlyfinite
+        aggregators: [ mean, max ]
+      - type: MaxRiskLevel
 
 terminate:
   - type: AfterTime
