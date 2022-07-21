@@ -473,13 +473,11 @@ def storeInFile(time):
     plt.cla()
     plt.close()
 
-def renderInVideo():
+def renderAll():
     with open('data/riskmap/map-seed-0.0', 'r') as riskmapFile,\
             open('data/firestation/positions-seed-0.0', 'r') as fireStationFile:
         riskMap = json.load(riskmapFile)
-        #riskMap = riskMap[:20]
         fireStationMap = json.load(fireStationFile)
-        #fireStationMap = fireStationMap[:20]
         riskAndFirestation = zip(riskMap, fireStationMap)
         camera = Camera(plt.figure())
         def storeInVideo(time):
@@ -487,6 +485,8 @@ def renderInVideo():
         for (riskSnapshot, fireStationSnapshot) in riskAndFirestation:
             riskMapPlot(riskSnapshot, fireStationSnapshot, storeInVideo)
         anim = camera.animate(blit=True)
-        anim.save('risks-video.mp4')
+        anim.save('charts/riskmap/risks-video.mp4')
+        for (riskSnapshot, fireStationSnapshot) in zip(riskMap, fireStationMap):
+            riskMapPlot(riskSnapshot, fireStationSnapshot, storeInFile)
 
-#renderInVideo()
+renderAll()
