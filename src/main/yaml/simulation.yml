@@ -96,6 +96,9 @@ deployments:
       shared: *shared
 
 export:
+  - type: FireStationPosition
+    parameters: [ "data/firestation", "positions", 100 ]
+    data: [ ]
   - type: CSVExporter
     parameters:
       fileNameRoot: "simulation"

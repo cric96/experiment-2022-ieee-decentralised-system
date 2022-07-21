@@ -103,58 +103,11 @@ export:
     parameters:
       fileNameRoot: "simulation-foo"
       exportPath: "data"
-      interval: 1
+      interval: 10
     data:
       - time
-      - type: AlarmHandledByStation
-      - molecule: station-busy
-        value-filter: onlyfinite
-        aggregators: [ sum, max ]
-      - molecule: solve
-        value-filter: onlyfinite
-        aggregators: [ mean ]
-      - molecule: water-level
-        value-filter: onlyfinite
-        aggregators: [ mean ]
-      - molecule: total-danger
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-1
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-2
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-3
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-4
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-5
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-6
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-7
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-8
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-9
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - molecule: danger-10
-        value-filter: onlyfinite
-        aggregators: [ sum ]
-      - type: AverageDistanceFromAlarm
-      - molecule: risk-level
-        value-filter: onlyfinite
-        aggregators: [ mean, max ]
-      - type: MaxRiskLevel
+
 
 terminate:
   - type: AfterTime
-    parameters: 1500 #40000
+    parameters: 40000
