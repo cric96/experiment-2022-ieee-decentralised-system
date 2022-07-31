@@ -447,10 +447,18 @@ if __name__ == '__main__':
         finalise_fig(ax_water_level(), "danger-and-managed")
 
         styles = ['x-','o-','*-', 'd-']
+        
         means_pd[labels_for(danger1, danger2, danger3, danger4)]\
             .plot(style=styles, ms=2, lw=1, title="Alerted devices over time").set_ylabel("devices receiving signals (devices)")
+        
         finalise_fig(ax_water_level(), "danger-evolution")
-
+        
+        ## Risk oracle vs risk evaluated 
+        ax = means_pd[['max-risk', 'risk-level[max]']].plot()
+        ax.set_ylabel("risk level")
+        ax.legend(["Oracle", "Our solution"])
+        finalise_fig(ax, "risk-oracle")
+        
 def riskMapPlot(riskMap, stations, render):
     print(riskMap['time'])
     filteredPosition = [element for element in stations['position'] if element[0] > 43.6]
@@ -478,14 +486,14 @@ def renderAll():
             open('data/firestation/positions-seed-0.0', 'r') as fireStationFile:
         riskMap = json.load(riskmapFile)
         fireStationMap = json.load(fireStationFile)
-        riskAndFirestation = zip(riskMap, fireStationMap)
-        camera = Camera(plt.figure())
-        def storeInVideo(time):
-            camera.snap()
-        for (riskSnapshot, fireStationSnapshot) in riskAndFirestation:
-            riskMapPlot(riskSnapshot, fireStationSnapshot, storeInVideo)
-        anim = camera.animate(blit=True)
-        anim.save('charts/riskmap/risks-video.mp4')
+        #riskAndFirestation = zip(riskMap, fireStationMap)
+        #camera = Camera(plt.figure())
+        #def storeInVideo(time):
+        #    camera.snap()
+        #for (riskSnapshot, fireStationSnapshot) in riskAndFirestation:
+        #    riskMapPlot(riskSnapshot, fireStationSnapshot, storeInVideo)
+        #anim = camera.animate(blit=True)
+        #anim.save('charts/riskmap/risks-video.mp4')
         for (riskSnapshot, fireStationSnapshot) in zip(riskMap, fireStationMap):
             riskMapPlot(riskSnapshot, fireStationSnapshot, storeInFile)
 
