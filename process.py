@@ -466,6 +466,8 @@ try:
     sea = pickle.load(open("sea_pickle", 'rb'))
 except:
     seaRecompute = True
+
+limit_timestamps = 30
 firestations = json.load(open('src/main/resources/fire-station.json', 'rb'))
 firestations = [firestation for firestation in firestations if firestation[0] > 43.6]
 def riskMapPlot(riskMap, stations, render):
@@ -500,7 +502,9 @@ def storeInFile(time):
         os.mkdir(folder)
     fig = ax.figure
     fig.tight_layout()
+    plt.savefig(folder + str(time) + ".png")
     plt.savefig(folder + str(time) + ".pdf")
+
     plt.clf()
     plt.cla()
     plt.close()
@@ -508,8 +512,8 @@ def storeInFile(time):
 def renderAll():
     with open('data/riskmap/map-seed-0.0', 'r') as riskmapFile,\
             open('data/firestation/positions-seed-0.0', 'r') as fireStationFile:
-        riskMap = json.load(riskmapFile)
-        fireStationMap = json.load(fireStationFile)
+        riskMap = json.load(riskmapFile)[:limit_timestamps]
+        fireStationMap = json.load(fireStationFile)[:limit_timestamps]
         #riskAndFirestation = zip(riskMap, fireStationMap)
         #camera = Camera(plt.figure())
         #def storeInVideo(time):
