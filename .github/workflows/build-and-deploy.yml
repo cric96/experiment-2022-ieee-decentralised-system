@@ -34,11 +34,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3.0.2
       with:
-          lfs: true
-    - name: Checkout LFS objects
-      run: git lfs checkout
-    - uses: DanySK/build-check-deploy-gradle-action@2.1.2
-      with:
         build-command: true
         check-command: ./gradlew runAllGraphic
         deploy-command: true
@@ -49,6 +44,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.2
+        with:
+            lfs: true
+      - name: Checkout LFS objects
+        run: git lfs checkout
+        
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
