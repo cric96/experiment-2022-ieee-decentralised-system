@@ -9,7 +9,8 @@ from celluloid import Camera
 import geopandas
 import osmnx as ox
 from osmnx.projection import project_geometry
-
+from mpl_toolkits.basemap import Basemap
+import pickle
 def distance(val, ref):
     return abs(ref - val)
 vectDistance = np.vectorize(distance)
@@ -458,25 +459,48 @@ if __name__ == '__main__':
         ax.set_ylabel("risk level")
         ax.legend(["Oracle", "Our solution"])
         finalise_fig(ax, "risk-oracle")
-        
+
+sea = []
+seaRecompute = False
+try:
+    sea = pickle.load(open("sea_pickle", 'rb'))
+except:
+    seaRecompute = True
+firestations = json.load(open('src/main/resources/fire-station.json', 'rb'))
+firestations = [firestation for firestation in firestations if firestation[0] > 43.6]
 def riskMapPlot(riskMap, stations, render):
+    global sea, seaRecompute
     print(riskMap['time'])
     filteredPosition = [element for element in stations['position'] if element[0] > 43.6]
     latRisk = [element['lat'] for element in riskMap['level']]
     lonRisk = [element['lon'] for element in riskMap['level']]
-    latStation = [element[1] for element in filteredPosition]
-    longStation = [element[0] for element in filteredPosition]
+    lonRiskStation = [element[1] for element in filteredPosition]
+    latRiskStation = [element[0] for element in filteredPosition]
+    lonFirestations = [element[1] for element in firestations]
+    latFirestations = [element[0] for element in firestations]
+    if(seaRecompute):
+        bm = Basemap(resolution='f')
+        sea = [element for element in riskMap['level'] if not bm.is_land(element['lon'], element['lat'])]
+        pickle.dump(sea, open("sea_pickle", 'wb'))
+        seaRecompute = False
+    sea = [element for element in sea if element['lon'] < -79.14 ]
+    latSea = [element['lat'] for element in sea]
+    lonSea = [element['lon'] +0.027 for element in sea]
     risk = [element['risk'] for element in riskMap['level']]
     ax = plt.gca()
-    ax.scatter(x=lonRisk, y=latRisk, c=risk, alpha=0.7)
-    ax.scatter(x=latStation, y=longStation, marker="x", c='red', s=4.0)
+    ax.scatter(x=lonRisk, y=latRisk, c=risk, alpha=0.7, cmap='viridis_r')
+    ax.scatter(x=lonSea, y=latSea, c='black', s=5.0, marker="s")
+    ax.scatter(x=lonFirestations, y=latFirestations, c='white', marker="P", s=40.0, edgecolors='grey', linewidths=1.5)
+    ax.scatter(x=lonRiskStation, y=latRiskStation, c='white', s=40.0, edgecolors='red', linewidths=1.5)
     render(riskMap['time'])
 
 def storeInFile(time):
     folder = "charts/riskmap/"
     if(not os.path.exists(folder)):
         os.mkdir(folder)
-    plt.savefig(folder + str(time) + ".png")
+    fig = ax.figure
+    fig.tight_layout()
+    plt.savefig(folder + str(time) + ".pdf")
     plt.clf()
     plt.cla()
     plt.close()
