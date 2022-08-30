@@ -1,5 +1,5 @@
 [versions]
-alchemist = "23.0.0"
+alchemist = "24.1.7"
 kotlin = "1.7.10"
 junit = "5.9.0"
 scala = "2.13.8"
