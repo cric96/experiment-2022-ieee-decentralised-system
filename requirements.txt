@@ -20,7 +20,7 @@ llvmlite==0.39.0
 matplotlib==3.5.3
 mpl-toolkits.clifford==0.0.3
 munch==2.5.0
-networkx==2.8.5
+networkx==2.8.6
 numba==0.56.0
 numpy==1.22.4
 osmnx==1.2.1
