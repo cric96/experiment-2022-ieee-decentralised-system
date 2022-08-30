@@ -39,5 +39,5 @@ Shapely==1.8.2
 six==1.16.0
 sparse==0.13.0
 trimesh==3.12.9
-urllib3==1.26.11
+urllib3==1.26.12
 xarray==2022.6.0
