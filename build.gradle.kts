@@ -61,7 +61,7 @@ dependencies {
     testImplementation(libs.junit.core)
     testRuntimeOnly(libs.junit.engine)
     // Kotlin deps
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
 }
 // Heap size estimation for batches
