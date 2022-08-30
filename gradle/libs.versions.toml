@@ -1,7 +1,7 @@
 [versions]
 alchemist = "13.0.6"
 kotlin = "1.7.10"
-junit = "5.8.2"
+junit = "5.9.0"
 scala = "2.13.8"
 scalaMajor = "2.13"
 monocle = "3.1.0"
