@@ -17,7 +17,7 @@ h5py==3.7.0
 idna==3.3
 kiwisolver==1.4.4
 llvmlite==0.39.0
-matplotlib==3.5.2
+matplotlib==3.5.3
 mpl-toolkits.clifford==0.0.3
 munch==2.5.0
 networkx==2.8.5
