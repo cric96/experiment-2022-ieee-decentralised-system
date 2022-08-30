@@ -1,6 +1,6 @@
 [versions]
 alchemist = "13.0.6"
-kotlin = "1.6.10"
+kotlin = "1.6.20"
 junit = "5.8.2"
 scala = "2.13.6"
 scalaMajor = "2.13"
