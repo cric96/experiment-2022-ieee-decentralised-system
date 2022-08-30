@@ -8,7 +8,7 @@ monocle = "3.1.0"
 scalacsv = "1.3.10"
 requests = "0.7.1"
 ujson = "1.5.0"
-upickle = "1.4.3"
+upickle = "1.4.4"
 smile = "2.6.0"
 oslib = "0.8.1"
 
