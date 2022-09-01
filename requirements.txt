@@ -25,7 +25,7 @@ numba==0.56.0
 numpy==1.23.2
 osmnx==1.2.2
 packaging==21.3
-pandas==1.4.3
+pandas==1.4.4
 Pillow==9.2.0
 pyparsing==3.0.9
 pyproj==3.3.1
