@@ -14,7 +14,7 @@ Fiona==1.8.21
 fonttools==4.37.1
 geopandas==0.11.1
 h5py==3.7.0
-idna==3.3
+idna==3.4
 kiwisolver==1.4.4
 llvmlite==0.39.1
 matplotlib==3.5.3
