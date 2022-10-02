@@ -40,4 +40,4 @@ six==1.16.0
 sparse==0.13.0
 trimesh==3.15.2
 urllib3==1.26.12
-xarray==2022.6.0
+xarray==2022.9.0
