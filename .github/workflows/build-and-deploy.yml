@@ -32,7 +32,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.0.2
+      uses: actions/checkout@v3.1.0
       with:
         build-command: true
         check-command: ./gradlew runAllGraphic
@@ -43,7 +43,7 @@ jobs:
     needs: [compute-version]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
             lfs: true
       - name: Checkout LFS objects
