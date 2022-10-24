@@ -11,7 +11,7 @@ clifford==1.4.0
 cligj==0.7.2
 cycler==0.11.0
 Fiona==1.8.22
-fonttools==4.37.4
+fonttools==4.38.0
 geopandas==0.11.1
 h5py==3.7.0
 idna==3.4
