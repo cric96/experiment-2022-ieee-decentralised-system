@@ -22,7 +22,7 @@ mpl-toolkits.clifford==0.0.3
 munch==2.5.0
 networkx==2.8.8
 numba==0.56.4
-numpy==1.23.4
+numpy==1.23.5
 osmnx==1.2.2
 packaging==21.3
 pandas==1.5.1
