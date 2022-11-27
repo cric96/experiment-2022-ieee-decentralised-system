@@ -38,6 +38,6 @@ scipy==1.9.3
 Shapely==1.8.5.post1
 six==1.16.0
 sparse==0.13.0
-trimesh==3.16.2
+trimesh==3.16.4
 urllib3==1.26.13
 xarray==2022.11.0
