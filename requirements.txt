@@ -1,4 +1,4 @@
-attrs==22.1.0
+attrs==22.2.0
 basemap==1.3.6
 basemap-data==1.3.2
 basemap-data-hires==1.3.2
