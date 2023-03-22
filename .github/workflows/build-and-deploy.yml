@@ -47,7 +47,8 @@ jobs:
         with:
             lfs: true
       - name: Get remote data
-        run: wget -O data/riskmap/map-seed0.0 https://figshare.com/ndownloader/files/39704953
+      - run: mkdir -p data/riskmap
+      - run: wget -O data/riskmap/map-seed0.0 https://figshare.com/ndownloader/files/39704953
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
