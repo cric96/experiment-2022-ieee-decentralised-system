@@ -1,0 +1,22 @@
+incarnation: scafi
+
+network-model:
+  # Loads a class with this name implementing LinkingRule
+  type: ConnectWithinDistance
+  # Connection radius (parameter of a ConnectWithinDistance's constructor)
+  parameters: [0.5]
+
+deployments:
+  ## Place element in a grid like system with 10x10 size,
+  ## and placing each node at 0.25 distance from the other
+  ## with a random variation equal to 0.1
+  type: Grid
+  parameters: [-5, -5, 5, 5, 0.25, 0.25, 0.1, 0.1]
+  programs: # dynamics of the simulation
+      - program: &program
+        - time-distribution: 1 # fire each second
+          type: Event
+          actions: ## run a scafi program
+            - type: RunScafiProgram
+              parameters: [ programClassPath ]
+        - program: send
