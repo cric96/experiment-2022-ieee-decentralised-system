@@ -53,7 +53,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Install pyenv
-        uses: gabrielfalcao/pyenv-action@v10
+        uses: gabrielfalcao/pyenv-action@v12
         with:
           command: pyenv install
       - name: Install Python
