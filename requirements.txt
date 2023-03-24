@@ -9,7 +9,7 @@ click-plugins==1.1.1
 clifford==1.4.0
 cligj==0.7.2
 cycler==0.11.0
-Fiona==1.8.22
+Fiona==1.9.2
 fonttools==4.38.0
 geopandas==0.12.1
 h5py==3.8.0
